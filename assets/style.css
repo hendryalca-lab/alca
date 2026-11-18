@@ -41,6 +41,7 @@ h2{font-size:1.9rem;color:#f4eedd;margin-top:8px}
 /* tentang */
 .about{display:grid;grid-template-columns:1.5fr 1fr;gap:40px;align-items:start}
 .about p{color:#d6d0c0;margin-top:14px}
+.about .actions{justify-content:flex-start;margin-top:22px}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .stat{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius);padding:22px 18px;text-align:center}
 .stat b{display:block;font-family:Georgia,serif;font-size:2rem;color:var(--gold);font-weight:600;line-height:1.1}
