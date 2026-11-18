@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gedung | Alca</title>
+<meta name="description" content="Gedung Alca dan tiga game house (39, 17, Ozora): denah interaktif tempat tim dan agent Alca bekerja.">
+<meta property="og:title" content="Gedung | Alca">
+<meta property="og:type" content="website">
+<meta property="og:description" content="Denah interaktif gedung Alca, game house 39, 17, dan Ozora.">
+<meta name="theme-color" content="#0a0907">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Arah: gedung pixel tampak dari depan (potongan lantai), dibingkai gelap supaya aman ditempel di situs mana pun. */
+  --bg:#0a0907; --panel:#272c49; --panel-2:#323859; --ink:#f3efe6; --muted:#aab0cf; --line:#3d4468;
+  --accent:#ffb454; --good:#7ee2a8;
+  --f-body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-pixel:"Press Start 2P",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body)}
+.site{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:1120px;margin:0 auto;padding:14px 16px;border-bottom:1px solid #26231f}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-weight:700;font-size:18px}
+.brand img{width:28px;height:28px;object-fit:contain}
+.site nav{display:flex;gap:6px;flex-wrap:wrap}
+.site nav a{color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px;font-size:14px}
+.site nav a:hover{color:var(--ink);background:var(--panel)}
+.crumb{margin:0;color:var(--muted);font-size:13px}
+.crumb a{color:var(--muted)}
+.crumb a:hover{color:var(--ink)}
+.sitefoot{max-width:1120px;margin:0 auto;padding:18px 16px 32px;border-top:1px solid #26231f;color:var(--muted);font-size:13px}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 16px 28px;display:grid;gap:14px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{margin:0;font:400 15px/1.4 var(--f-pixel);color:var(--accent);letter-spacing:.02em}
+.sub{margin:8px 0 0;color:var(--muted);font-size:14px;max-width:64ch}
+.clock{display:flex;align-items:center;gap:9px;font:400 11px/1 var(--f-pixel);color:var(--ink);font-variant-numeric:tabular-nums;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+.clock .dot{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 rgba(126,226,168,.6);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 7px rgba(126,226,168,0)}100%{box-shadow:0 0 0 0 rgba(126,226,168,0)}}
+.viewer{position:relative;display:grid;grid-template-columns:minmax(0,1fr);background:#14172a;border:1px solid var(--line);border-radius:12px;overflow:clip}
+.canvasbox{position:relative;min-width:0}
+.scroller{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.stage{width:100%;min-width:600px}
+canvas#scene{display:block;touch-action:pan-x pan-y}
+.right{display:flex;align-items:center;gap:10px}
+.tools{display:flex;gap:6px}
+.tools button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:700 18px/1 var(--f-body);cursor:pointer}
+.tools button:hover{background:var(--panel-2)}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* panel profil: lembar bawah di layar sempit, kolom kanan yang ikut menggulir di layar lebar */
+.side{position:sticky;bottom:8px;z-index:3;margin:0 8px 8px;pointer-events:none}
+.sidein>*{pointer-events:auto}
+.hint{display:none}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 12px 34px rgba(0,0,0,.55)}
+.card .close{position:absolute;top:8px;right:8px;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
+.card .close:hover{background:var(--panel-2);color:var(--ink)}
+.who{display:flex;gap:12px;align-items:center;padding-right:24px}
+.who canvas{width:56px;height:56px;border-radius:10px;background:var(--panel-2);flex:none}
+.who h2{margin:0;font-size:18px;line-height:1.2}
+.who p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;margin:12px 0 0}
+.facts dt{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;align-self:center}
+.facts dd{margin:0;font-size:15px}
+.traits{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
+.traits li{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:13px}
+.state{display:inline-flex;align-items:center;gap:7px;margin:10px 0 0;font-size:13px;color:var(--good);font-weight:600}
+.state::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--good)}
+.note{margin:10px 0 0;color:var(--muted);font-size:13px}
+.list{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.list summary{cursor:pointer;font-weight:600}
+.groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px 18px;margin-top:12px}
+.groups h3{margin:0 0 6px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;line-height:1.35}
+.groups ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.groups button{font:inherit;font-size:14px;color:var(--ink);background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:5px 11px;cursor:pointer}
+.groups button:hover{border-color:var(--accent)}
+.groups p{margin:0}
+.foot{margin:0;color:var(--muted);font-size:13px}
+@media (min-width:1040px){
+  .viewer{grid-template-columns:minmax(0,1fr) 296px}
+  .side{position:static;margin:0;border-left:1px solid var(--line);background:var(--panel);pointer-events:auto}
+  .sidein{position:sticky;top:12px;padding:16px}
+  .card{background:transparent;border:0;box-shadow:none;padding:0}
+  .hint:not([hidden]){display:block;margin:0;color:var(--muted);font-size:14px}
+  .tools{display:none}
+}
+.swipe{display:none}
+@media (max-width:719px){ .swipe{display:block} }
+@media (prefers-reduced-motion:reduce){.clock .dot{animation:none}}
+</style>
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html"><img src="assets/logo.webp" alt="" width="28" height="28"><span>Alca</span></a>
+  <nav aria-label="Menu utama">
+    <a href="index.html">Beranda</a>
+    <a href="index.html#tentang">Tentang</a>
+    <a href="index.html#bidang-usaha">Bidang Usaha</a>
+    <a href="index.html#kontak">Kontak</a>
+  </nav>
+</header>
+<div class="wrap">
+  <p class="crumb"><a href="index.html">Beranda</a> / <a href="index.html#tentang">Tentang</a> / Gedung</p>
+  <header class="top">
+    <div>
+      <h1>Gedung Alca</h1>
+      <p class="sub" id="sub"></p>
+    </div>
+    <div class="right">
+      <div class="tools">
+        <button type="button" id="zOut" aria-label="Perkecil denah">&minus;</button>
+        <button type="button" id="zIn" aria-label="Perbesar denah">+</button>
+      </div>
+      <div class="clock"><span class="dot"></span><span><span id="clock">--:--</span> WIB</span></div>
+    </div>
+  </header>
+
+  <section class="viewer" id="viewer" aria-label="Denah gedung">
+    <div class="canvasbox">
+      <div class="scroller" id="scroller">
+        <div class="stage" id="stage">
+          <canvas id="scene" role="img" aria-label="Potongan gedung Alca dari rooftop sampai lantai 1, dan tiga gedung game house: 39, 17, dan Ozora. Buka daftar di bawah untuk melihat profil tiap karakter."></canvas>
+        </div>
+      </div>
+    </div>
+    <aside class="side" id="side"><div class="sidein">
+      <p class="hint" id="hint">Klik karakter di denah untuk melihat profilnya: nama, gender, umur, tugas, dan sifat.</p>
+      <div class="card" id="card" hidden aria-live="polite">
+        <button type="button" class="close" id="cardClose" aria-label="Tutup">&times;</button>
+        <div class="who">
+          <canvas id="avatar" width="56" height="56"></canvas>
+          <div><h2 id="cName"></h2><p id="cRoom"></p></div>
+        </div>
+        <dl class="facts" id="cFacts"></dl>
+        <ul class="traits" id="cTraits"></ul>
+        <div class="state" id="cState" hidden>Sedang posting</div>
+        <p class="note" id="cNote" hidden></p>
+      </div>
+    </div></aside>
+  </section>
+
+  <details class="list">
+    <summary>Lihat sebagai daftar</summary>
+    <div class="groups" id="groups"></div>
+  </details>
+
+  <p class="foot swipe">Geser denah ke samping bila terpotong, atau pakai tombol + dan &minus;.</p>
+  <p class="foot">Petugas kebersihan (3 orang per lantai, kecuali lantai direktur) berkeliling pelan di tiap lantai. Jam mengikuti WIB, dan gelembung "posting" muncul sesuai jadwal posting otomatis tiap agent.</p>
+  <noscript><p class="foot">Halaman ini butuh JavaScript untuk menampilkan denah gedung.</p></noscript>
+</div>
+<footer class="sitefoot">&copy; Alca &middot; sejak 2010</footer>
+
+<script>
+(() => {
+'use strict';
+
+/* ============ Konstanta & waktu (WIB) ============ */
+const W = 480, H = 860;              // ukuran logis kanvas (piksel "seni")
+const LH = 76;                       // tinggi satu lantai
+const IX0 = 26, IX1 = 452;           // tepi dalam menara Alca
+const qs = new URLSearchParams(location.search);
+const reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+function wibDate(ms){ return new Date(ms + 7 * 3600e3); }
+function wibSec(ms){ const d = wibDate(ms); return d.getUTCHours() * 3600 + d.getUTCMinutes() * 60 + d.getUTCSeconds(); }
+let simOffset = 0;                   // ?jam=HH:MM untuk pratinjau jam tertentu
+{ const m = /^(\d{1,2}):(\d{2})$/.exec(qs.get('jam') || ''); if (m) simOffset = ((+m[1]) * 3600 + (+m[2]) * 60 - wibSec(Date.now())) * 1000; }
+const nowMs = () => Date.now() + simOffset;
+
+/* Jadwal posting otomatis (WIB) dan lama proses (detik), diambil dari riwayat eksekusi n8n. Tanpa polling live. */
+const JADWAL = {
+  aliana: { t: ['07:30', '12:30', '19:30'], d: 160 },
+  lumia:  { t: ['02:30', '09:30', '15:30', '18:30', '21:30'], d: 140 },
+  hyzto:  { t: ['12:00', '19:30'], d: 130 },
+  lyfe:   { t: ['07:30', '18:00'], d: 60 }
+};
+const toSec = s => { const [h, m] = s.split(':').map(Number); return h * 3600 + m * 60; };
+function isPosting(id, sec){
+  if (qs.has('semua')) return !!JADWAL[id];
+  const j = JADWAL[id]; if (!j) return false;
+  return j.t.some(s => (((sec - toSec(s)) % 86400) + 86400) % 86400 < j.d);
+}
+function ageOf(lahir, d){
+  if (!lahir) return null;
+  const [y, m, dd] = lahir.split('-').map(Number);
+  let a = d.getUTCFullYear() - y;
+  const mo = d.getUTCMonth() + 1, da = d.getUTCDate();
+  if (mo < m || (mo === m && da < dd)) a--;
+  return a;
+}
+function skyOf(sec){
+  const h = sec / 3600;
+  if (h >= 7 && h < 17) return 'day';
+  if ((h >= 5 && h < 7) || (h >= 17 && h < 19)) return 'dusk';
+  return 'night';
+}
+
+/* ============ Tata letak ============ */
+const SKY = { day: ['#79c3ef', '#9ad4f5', '#b9e3fa'], dusk: ['#3b3d78', '#a9507a', '#ee9f5f'], night: ['#0d1130', '#141a3e', '#1b2250'] };
+const T = {                                         // tema ruangan: [dinding, lantai1, lantai2]
+  direktur:    ['#8a5a34', '#ecd8b8', '#e4cda8'],
+  manajemen:   ['#3f8a6a', '#dcefe6', '#d0e7db'],
+  dev:         ['#5b63b0', '#dfe2f7', '#d4d8f2'],
+  sw:          ['#3d8a96', '#d3ecef', '#c8e5e9'],
+  sosmed:      ['#b8668a', '#f6dfe9', '#f0d3e0'],
+  gh:          ['#4f8a4b', '#dcefd8', '#d1e8cc'],
+  kontraktor:  ['#6d6d66', '#e0e0da', '#d6d6cf'],
+  interior:    ['#b08a4a', '#f8eed8', '#f2e6cb'],
+  tamu:        ['#b5703a', '#f6e6d0', '#efdcc0'],
+  resepsionis: ['#7a6aa8', '#e8e4f5', '#ddd8ee'],
+  keamanan:    ['#34486e', '#d6dbe8', '#cbd2e2'],
+  house:       ['#4f8a4b', '#dcefd8', '#d1e8cc']
+};
+/* Lantai Alca dari atas ke bawah (sesuai tab Gedung; lantai 4 memang tidak ada). */
+const LEVELS = [
+  { id: 'rt', label: 'ATAP', title: 'Rooftop (helipad)', y: 14, roof: true },
+  { id: 'l8', label: '8', title: 'Lantai 8', y: 90,  rooms: [{ id: 'direktur', name: 'Ruang direktur', share: 1, maxPitch: 80 }] },
+  { id: 'l7', label: '7', title: 'Lantai 7', y: 166, rooms: [{ id: 'manajemen', name: 'Manajemen bisnis', share: 1, maxPitch: 76 }] },
+  { id: 'l6', label: '6', title: 'Lantai 6', y: 242, rooms: [{ id: 'dev', name: 'Developer game', share: .453, maxPitch: 48 }, { id: 'sw', name: 'Software house', share: .547, maxPitch: 48 }] },
+  { id: 'l5', label: '5', title: 'Lantai 5', y: 318, rooms: [{ id: 'sosmed', name: 'Agensi sosial media', share: 1, maxPitch: 60 }] },
+  { id: 'l3', label: '3', title: 'Lantai 3', y: 394, rooms: [{ id: 'gh', name: 'Game house', share: 1, ax: .28 }] },
+  { id: 'l2', label: '2', title: 'Lantai 2', y: 470, rooms: [{ id: 'kontraktor', name: 'Kontraktor sipil', share: .5, maxPitch: 70 }, { id: 'interior', name: 'Desain interior', share: .5, maxPitch: 70 }] },
+  { id: 'l1', label: '1', title: 'Lantai 1', y: 546, rooms: [{ id: 'tamu', name: 'Ruangan tamu', share: .25 }, { id: 'resepsionis', name: 'Ruang resepsionis', share: .23 }, { id: 'keamanan', name: 'Ruang keamanan', share: .52, maxPitch: 44 }] }
+];
+const HY = 690, HW = 148, HH = 150;                       // badan game house
+const HOUSES = [
+  { id: 'h39', code: '39',    x: 8,   title: 'Gedung 39' },
+  { id: 'h17', code: '17',    x: 166, title: 'Gedung 17' },
+  { id: 'hoz', code: 'OZORA', x: 324, title: 'Gedung Ozora' }
+];
+const ROOMS = [];
+for (const L of LEVELS){
+  if (!L.rooms) continue;
+  const gap = 2, total = (IX1 - IX0) - gap * (L.rooms.length - 1);
+  let x = IX0;
+  L.rooms.forEach((R, i) => {
+    const w = i === L.rooms.length - 1 ? IX1 - x : Math.round(R.share * total);
+    ROOMS.push(Object.assign({}, R, { level: L, building: 'Gedung Alca', where: L.title, x, y: L.y + 2, w, h: 71, oy: L.y + 21, theme: T[R.id] }));
+    x += w + gap;
+  });
+}
+for (const h of HOUSES){
+  ROOMS.push({ id: h.id, name: 'Game house', house: h, building: h.title, where: '', x: h.x + 4, y: HY + 4, w: HW - 8, h: HH - 8, oy: HY + 110, maxPitch: 70, theme: T.house });
+}
+const ROOM = Object.fromEntries(ROOMS.map(r => [r.id, r]));
+
+/* ============ Data karakter (tab Kantor di sheet Project) ============ */
+/* Tanggal lahir penuh dari sheet; yang tampil di halaman hanya umur. Hn tidak punya data lahir/sifat. O: menunggu info. */
+const P = 'Perempuan', Lk = 'Lelaki';
+const SEC_SKIN = ['#f2c9a0', '#e8b88a', '#e0a97a', '#c68a5a'];
+const DATA = [
+  // Lantai 8
+  { id:'hn', nama:'Hn', room:'direktur', gender:Lk, lahir:null, tugas:'Direktur', sifat:'', minimal:true,
+    look:{ skin:'#e0a97a', hair:'#1e1e28', shirt:'#2b2f45', style:'short', acc:'suit' }, item:'papers', mon:'hn', dw:56 },
+  { id:'reina', nama:'Reina', room:'direktur', gender:P, lahir:'2000-05-18', tugas:'Sekretaris', sifat:'Sigap, Rapi, Setia',
+    look:{ skin:'#f2c9a0', hair:'#3a2a4a', shirt:'#6f8fe0', style:'bob' }, item:'papers' },
+  // Lantai 7
+  { id:'yllina', nama:'Yllina', room:'manajemen', gender:P, lahir:'2002-03-03', tugas:'Ahli manajemen bisnis', sifat:'Gesit, Rapi, Ceria',
+    look:{ skin:'#f2c9a0', hair:'#1e1e28', shirt:'#f08a5d', style:'bob' }, item:'papers' },
+  { id:'yrrina', nama:'Yrrina', room:'manajemen', gender:P, lahir:'1996-06-24', tugas:'Ahli manajemen bisnis', sifat:'Strategis, Tenang, Jujur',
+    look:{ skin:'#c68a5a', hair:'#2a1d1a', shirt:'#4a7a9a', style:'ponytail' }, item:'mug' },
+  { id:'kaina', nama:'Kaina', room:'manajemen', gender:P, lahir:'1999-08-09', tugas:'Ahli manajemen bisnis', sifat:'Cermat, Komunikatif, Tenang',
+    look:{ skin:'#e8b88a', hair:'#4a2f1e', shirt:'#5b8def', style:'long' }, item:'plant' },
+  // Lantai 6
+  { id:'lyxi', nama:'Lyxi', room:'dev', gender:Lk, lahir:'2000-02-11', tugas:'Produser game', sifat:'Berani, Fokus, Tangguh',
+    look:{ skin:'#e0a97a', hair:'#3a2a20', shirt:'#c0463c', style:'short' }, item:'mug' },
+  { id:'renee', nama:'Renee', room:'dev', gender:P, lahir:'2004-06-17', tugas:'Produser game', sifat:'Imajinatif, Sabar, Ceria',
+    look:{ skin:'#e8b88a', hair:'#6a3d8a', shirt:'#3a7bd5', style:'long' }, item:'plant' },
+  { id:'mireth', nama:'Mireth', room:'dev', gender:P, lahir:'2004-10-05', tugas:'Produser game', sifat:'Lembut, Telaten, Kreatif',
+    look:{ skin:'#f2c9a0', hair:'#2fa58a', shirt:'#8dd3a1', style:'bob' }, item:'plant' },
+  { id:'yngwie', nama:'Yngwie', room:'dev', gender:Lk, lahir:'1995-04-08', tugas:'Produser game', sifat:'Analitis, Tenang, Rendah hati',
+    look:{ skin:'#c68a5a', hair:'#1e1e28', shirt:'#d8b24a', style:'short' }, item:'papers' },
+  { id:'x9', nama:'X9', room:'sw', gender:Lk, lahir:'1997-06-02', tugas:'Ahli perangkat lunak', sifat:'Logis, Teliti, Sabar',
+    look:{ skin:'#f2c9a0', hair:'#1e1e28', shirt:'#3d8a96', style:'short', acc:'glasses' }, item:'mug' },
+  { id:'reign', nama:'Reign', room:'sw', gender:Lk, lahir:'2003-04-25', tugas:'Ahli perangkat lunak', sifat:'Artistik, Cekatan, Ceria',
+    look:{ skin:'#e8b88a', hair:'#8b3a3a', shirt:'#e07a3a', style:'short', acc:'beret' }, item:'papers' },
+  { id:'rigg', nama:'Rigg', room:'sw', gender:Lk, lahir:'2001-10-12', tugas:'Ahli perangkat lunak', sifat:'Telaten, Hangat, Praktis',
+    look:{ skin:'#c68a5a', hair:'#2a2a3a', shirt:'#6aa86a', style:'short', acc:'chef' }, item:'plant' },
+  { id:'yanzhe', nama:'Yanzhe', room:'sw', gender:Lk, lahir:'1998-02-17', tugas:'Ahli perangkat lunak', sifat:'Logis, Tangguh, Rendah hati',
+    look:{ skin:'#e0a97a', hair:'#2a2a3a', shirt:'#8a6ad0', style:'short' }, item:'mug' },
+  { id:'viz', nama:'Viz', room:'sw', gender:P, lahir:'2003-09-21', tugas:'Ahli perangkat lunak', sifat:'Cekatan, Kreatif, Hangat',
+    look:{ skin:'#f2c9a0', hair:'#d8a24a', shirt:'#3fb6a8', style:'ponytail' }, item:'papers' },
+  // Lantai 5
+  { id:'aliana', nama:'Aliana', room:'sosmed', gender:P, lahir:'2005-03-14', tugas:'Ahli sosial media', sifat:'Kreatif, Teliti, Ramah',
+    look:{ skin:'#f2c9a0', hair:'#2a1d1a', shirt:'#e86f8f', style:'long' }, item:'mug' },
+  { id:'lumia', nama:'Lumia', room:'sosmed', gender:P, lahir:'2002-07-09', tugas:'Ahli sosial media', sifat:'Gesit, Ceria, Disiplin',
+    look:{ skin:'#e8b88a', hair:'#7a3b4a', shirt:'#f2a13c', style:'long' }, item:'plant' },
+  { id:'ysabell', nama:'Ysabell', room:'sosmed', gender:P, lahir:'2003-01-27', tugas:'Ahli sosial media', sifat:'Humoris, Hangat, Penasaran',
+    look:{ skin:'#f2c9a0', hair:'#4a2f1e', shirt:'#9b7bdc', style:'bob' }, item:'papers' },
+  { id:'lyfe', nama:'Lyfe', room:'sosmed', gender:Lk, lahir:'1999-05-22', tugas:'Ahli sosial media', sifat:'Tenang, Bijak, Optimis',
+    look:{ skin:'#e0a97a', hair:'#2a2a3a', shirt:'#5aa6c8', style:'short' }, item:'plant' },
+  { id:'hyzto', nama:'Hyzto', room:'sosmed', gender:Lk, lahir:'1999-09-03', tugas:'Ahli sosial media', sifat:'Penasaran, Cerdas, Pendongeng',
+    look:{ skin:'#c68a5a', hair:'#1e1e28', shirt:'#7a5a3a', style:'short' }, item:'papers' },
+  { id:'morgenstern', nama:'Morgenstern', room:'sosmed', gender:P, lahir:'2005-08-30', tugas:'Ahli E-commerce', sifat:'Cermat, Gigih, Murah senyum',
+    look:{ skin:'#f2c9a0', hair:'#2b1a2e', shirt:'#d9a441', style:'ponytail' }, item:'mug' },
+  { id:'yllara', nama:'Yllara', room:'sosmed', gender:P, lahir:'2001-06-14', tugas:'Ahli platform', sifat:'Imajinatif, Tekun, Optimis',
+    look:{ skin:'#e8b88a', hair:'#2a1d1a', shirt:'#c06bd6', style:'bob' }, item:'plant' },
+  // Lantai 3
+  { id:'roa', nama:'Roa', room:'gh', gender:P, lahir:'2001-08-14', tugas:'HRD', sifat:'Ramah, Sabar, Teliti',
+    look:{ skin:'#e8b88a', hair:'#2a1d1a', shirt:'#6aa0e8', style:'long', acc:'headset' }, item:'mug' },
+  { id:'iray', nama:'Iray', room:'gh', gender:Lk, lahir:'2001-01-23', tugas:'HRD', sifat:'Santai, Ceria, Penasaran',
+    look:{ skin:'#c68a5a', hair:'#3a2a20', shirt:'#e6e6ee', style:'short' }, wander:true },
+  // Lantai 2 (meja kosong)
+  { id:'kos1', empty:true, nama:'Meja kosong', room:'kontraktor', tugas:'Tim kontraktor sipil', item:'hardhat' },
+  { id:'kos2', empty:true, nama:'Meja kosong', room:'kontraktor', tugas:'Tim kontraktor sipil', item:'blueprint' },
+  { id:'kos3', empty:true, nama:'Meja kosong', room:'kontraktor', tugas:'Tim kontraktor sipil', item:'papers' },
+  { id:'int1', empty:true, nama:'Meja kosong', room:'interior', tugas:'Tim desain interior', item:'swatch' },
+  { id:'int2', empty:true, nama:'Meja kosong', room:'interior', tugas:'Tim desain interior', item:'lamp' },
+  { id:'int3', empty:true, nama:'Meja kosong', room:'interior', tugas:'Tim desain interior', item:'plant' },
+  // Lantai 1: sekuriti dan resepsionis tanpa nama (staf), umur dan sifat tetap ada
+  { id:'sek1', anon:true, nama:'Petugas keamanan', room:'keamanan', gender:Lk, lahir:'1986-11-10', tugas:'Menjaga keamanan gedung', sifat:'Tegas, Setia, Tenang',
+    look:{ skin:'#c68a5a', hair:'#1e1e28', shirt:'#1f3560', style:'short', acc:'cap badge' }, item:'mug', mon:'single' },
+  { id:'sek2', anon:true, nama:'Petugas keamanan', room:'keamanan', gender:P, lahir:'1994-04-12', tugas:'Menjaga keamanan gedung', sifat:'Waspada, Sopan, Sabar',
+    look:{ skin:'#e8b88a', hair:'#2a1d1a', shirt:'#2f4a7a', style:'ponytail', acc:'cap badge' }, item:'papers', mon:'single' },
+  { id:'sek3', anon:true, nama:'Petugas keamanan', room:'keamanan', gender:Lk, lahir:'1993-07-30', tugas:'Menjaga keamanan gedung', sifat:'Disiplin, Jujur, Ramah',
+    look:{ skin:'#e0a97a', hair:'#2a2a3a', shirt:'#2f4a7a', style:'short', acc:'cap badge' }, item:'mug', mon:'single' },
+  { id:'sek4', anon:true, nama:'Petugas keamanan', room:'keamanan', gender:Lk, lahir:'1990-02-05', tugas:'Menjaga keamanan gedung', sifat:'Tangguh, Teliti, Bertanggung jawab',
+    look:{ skin:'#f2c9a0', hair:'#3a2a20', shirt:'#2f4a7a', style:'short', acc:'cap badge' }, item:'papers', mon:'single' },
+  { id:'sek5', anon:true, nama:'Petugas keamanan', room:'keamanan', gender:P, lahir:'1997-08-16', tugas:'Menjaga keamanan gedung', sifat:'Sigap, Ramah, Tulus',
+    look:{ skin:'#c68a5a', hair:'#1e1e28', shirt:'#2f4a7a', style:'ponytail', acc:'cap badge' }, item:'plant', mon:'single' },
+  { id:'resp', anon:true, nama:'Resepsionis', room:'resepsionis', gender:P, lahir:'1998-04-09', tugas:'Menyambut tamu di meja resepsionis', sifat:'Ramah, Santun, Cekatan',
+    look:{ skin:'#f2c9a0', hair:'#2a1d1a', shirt:'#7a6aa8', style:'ponytail', acc:'headset' }, item:'bell', mon:'single', dw:52 },
+  // Game house 39, 17, Ozora
+  { id:'sh', nama:'SH', room:'h39', gender:Lk, lahir:'1996-09-12', tugas:'Head admin', sifat:'Tekun, Jujur, Bertanggung jawab',
+    look:{ skin:'#e0a97a', hair:'#1e1e28', shirt:'#2f7d4f', style:'short', acc:'headset' }, item:'coins', mon:'dual', dw:46 },
+  { id:'k', nama:'K', room:'h39', gender:Lk, lahir:'1997-03-12', tugas:'Deputy head admin', sifat:'Inisiatif, Ramah, Rajin',
+    look:{ skin:'#f2c9a0', hair:'#3a2a20', shirt:'#8a6a3a', style:'short' }, item:'papers' },
+  { id:'o', nama:'O', room:'h17', gender:Lk, lahir:null, tugas:'Admin', sifat:'Rajin, Sopan, Tulus', umurPending:true,
+    look:{ skin:'#c68a5a', hair:'#1e1e28', shirt:'#4a6aa0', style:'short' }, item:'mug' },
+  { id:'n', nama:'N', room:'hoz', gender:Lk, lahir:'1996-07-02', tugas:'Admin', sifat:'Ramah, Gigih, Humoris',
+    look:{ skin:'#e0a97a', hair:'#2a2a3a', shirt:'#a0556a', style:'short' }, item:'plant' }
+];
+
+/* ============ Alat gambar (rect dibulatkan ke piksel, tanpa celah) ============ */
+function gfx(c, s){
+  return {
+    c, s,
+    R(x, y, w, h, col){
+      const x0 = Math.round(x * s), y0 = Math.round(y * s);
+      c.fillStyle = col;
+      c.fillRect(x0, y0, Math.round((x + w) * s) - x0, Math.round((y + h) * s) - y0);
+    },
+    font(size, weight){ c.font = (weight || 'bold') + ' ' + (size * s) + 'px ui-monospace,Menlo,Consolas,"Courier New",monospace'; },
+    T(txt, x, y, size, col, align){ this.font(size); c.fillStyle = col; c.textAlign = align || 'left'; c.textBaseline = 'alphabetic'; c.fillText(txt, x * s, y * s); },
+    M(txt, size){ this.font(size); return c.measureText(txt).width / s; }
+  };
+}
+function shade(hex, amt){
+  const n = parseInt(hex.slice(1), 16);
+  const f = v => Math.max(0, Math.min(255, v + amt));
+  return '#' + [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(f).map(v => v.toString(16).padStart(2, '0')).join('');
+}
+const hash = s => { let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); };
+function disc(g, cx, cy, r, col){ for (let y = -r; y <= r; y++){ const w = Math.round(Math.sqrt(r * r - y * y)); g.R(cx - w, cy + y, 2 * w, 1, col); } }
+function ellipse(g, cx, cy, rx, ry, col){ for (let y = -ry; y <= ry; y++){ const w = Math.round(rx * Math.sqrt(1 - (y * y) / (ry * ry))); g.R(cx - w, cy + y, 2 * w, 1, col); } }
+
+/* ============ Dekorasi ============ */
+function plant(g, x, y){
+  g.R(x + 1, y + 8, 6, 4, '#b5651d'); g.R(x + 1, y + 8, 6, 1, '#d98a3d');
+  g.R(x + 2, y + 3, 4, 5, '#3fa34d'); g.R(x, y + 4, 3, 3, '#4cc060'); g.R(x + 5, y + 4, 3, 3, '#4cc060'); g.R(x + 3, y + 1, 2, 3, '#5fd068');
+}
+function sofa(g, x, y, w){
+  g.R(x, y, w, 7, '#8a5fa8'); g.R(x, y + 6, w, 9, '#a176c0');
+  g.R(x, y + 3, 4, 12, '#7a4f98'); g.R(x + w - 4, y + 3, 4, 12, '#7a4f98');
+  g.R(x + 2, y + 15, 3, 2, '#4a3a2a'); g.R(x + w - 5, y + 15, 3, 2, '#4a3a2a');
+}
+function arcade(g, x, y){
+  g.R(x, y, 14, 24, '#3a3f8c'); g.R(x + 1, y, 12, 1, '#5560c0');
+  g.R(x + 2, y + 3, 10, 8, '#0d1424'); g.R(x + 3, y + 4, 8, 6, '#7ee2f0'); g.R(x + 6, y + 6, 2, 2, '#ffd166');
+  g.R(x + 2, y + 13, 10, 5, '#2c3070'); g.R(x + 4, y + 14, 1, 2, '#e05a5a'); g.R(x + 8, y + 15, 2, 2, '#f2c230');
+  g.R(x, y + 24, 14, 2, '#22265c');
+}
+function shelf(g, x, y, w){
+  g.R(x, y, w, 16, '#7a5632'); g.R(x + 1, y + 1, w - 2, 14, '#4a3320'); g.R(x + 1, y + 8, w - 2, 1, '#7a5632');
+  const cols = ['#c0463c', '#3a7bd5', '#f2c230', '#4fc3a1', '#9b7bdc'];
+  for (let i = 0; i < Math.floor((w - 3) / 2); i++){ g.R(x + 2 + i * 2, y + 3, 1, 5, cols[i % 5]); g.R(x + 2 + i * 2, y + 10, 1, 5, cols[(i + 2) % 5]); }
+}
+function windowPane(g, x, y){
+  g.R(x, y, 16, 11, '#f2f7ff'); g.R(x + 1, y + 1, 14, 9, '#8fcdf2'); g.R(x + 7, y + 1, 2, 9, '#f2f7ff'); g.R(x + 1, y + 5, 14, 1, '#f2f7ff'); g.R(x + 2, y + 2, 3, 2, '#c8e8fb');
+}
+function windows(g, r, n){
+  const cx = r.x + r.w / 2;
+  for (let k = 0; k < n; k++){
+    const lx = cx - 52 - 22 * k - 16, rx = cx + 52 + 22 * k;
+    if (lx > r.x + 40) windowPane(g, lx, r.y + 4);
+    if (rx + 16 < r.x + r.w - 40) windowPane(g, rx, r.y + 4);
+  }
+}
+function heart(g, x, y, col){ g.R(x + 1, y, 2, 1, col); g.R(x + 4, y, 2, 1, col); g.R(x, y + 1, 7, 2, col); g.R(x + 1, y + 3, 5, 1, col); g.R(x + 2, y + 4, 3, 1, col); g.R(x + 3, y + 5, 1, 1, col); }
+function whiteboard(g, x, y, w){
+  g.R(x, y, w, 13, '#7a7a82'); g.R(x + 1, y + 1, w - 2, 11, '#f6f6f2');
+  const hs = [3, 5, 4, 7, 6, 8], cs = ['#4a8dd8', '#4fc3a1', '#f2c230', '#e86f8f', '#9b7bdc', '#4a8dd8'];
+  for (let i = 0; i < Math.floor((w - 6) / 7); i++) g.R(x + 4 + i * 7, y + 11 - hs[i % 6], 4, hs[i % 6], cs[i % 6]);
+}
+function cone(g, x, y){ g.R(x + 2, y, 3, 2, '#e8702a'); g.R(x + 1, y + 2, 5, 3, '#e8702a'); g.R(x + 2, y + 2, 3, 1, '#f4f4f4'); g.R(x, y + 5, 7, 1, '#c85a1c'); }
+function blueprint(g, x, y){ g.R(x, y, 26, 12, '#7a5632'); g.R(x + 1, y + 1, 24, 10, '#9bc4f0'); g.R(x + 3, y + 3, 14, 1, '#fff'); g.R(x + 3, y + 5, 9, 1, '#fff'); g.R(x + 3, y + 8, 18, 1, '#fff'); g.R(x + 19, y + 3, 4, 4, '#fff'); }
+
+const DECO = {
+  direktur(g, r){
+    const cx = r.x + r.w / 2, ry = r.y + 24;
+    g.R(cx - 88, ry, 176, 42, '#9c3d3a'); g.R(cx - 86, ry + 2, 172, 38, '#b5524e'); g.R(cx - 82, ry + 6, 164, 30, '#9c3d3a'); g.R(cx - 80, ry + 8, 160, 26, '#b5524e');
+    shelf(g, r.x + 4, r.y, 34); shelf(g, r.x + r.w - 38, r.y, 34); windows(g, r, 4);
+    plant(g, r.x + 4, r.y + r.h - 14); plant(g, r.x + r.w - 12, r.y + r.h - 14);
+  },
+  manajemen(g, r){
+    whiteboard(g, r.x + 24, r.y + 2, 46); whiteboard(g, r.x + r.w - 70, r.y + 2, 46); windows(g, r, 2);
+    plant(g, r.x + 4, r.y + r.h - 14); plant(g, r.x + r.w - 12, r.y + r.h - 14);
+  },
+  dev(g, r){ windows(g, r, 1); plant(g, r.x + 2, r.y + r.h - 14); plant(g, r.x + r.w - 10, r.y + r.h - 14); },
+  sw(g, r){ windows(g, r, 1); plant(g, r.x + 2, r.y + r.h - 14); plant(g, r.x + r.w - 10, r.y + r.h - 14); },
+  sosmed(g, r){
+    windows(g, r, 3); heart(g, r.x + 8, r.y + 5, '#e8517c'); heart(g, r.x + r.w - 16, r.y + 5, '#e8517c');
+    plant(g, r.x + 3, r.y + r.h - 14); plant(g, r.x + r.w - 11, r.y + r.h - 14);
+  },
+  gh(g, r){
+    shelf(g, r.x + 6, r.y, 40); windows(g, r, 3);
+    arcade(g, r.x + r.w * .60, r.y + 22); arcade(g, r.x + r.w * .60 + 18, r.y + 22);
+    sofa(g, r.x + r.w * .80, r.y + 32, 48);
+    plant(g, r.x + 3, r.y + r.h - 14); plant(g, r.x + r.w - 11, r.y + r.h - 14);
+  },
+  kontraktor(g, r){
+    blueprint(g, r.x + 10, r.y + 2); blueprint(g, r.x + r.w - 36, r.y + 2);
+    for (let i = 0; i * 6 < r.w; i++) g.R(r.x + i * 6, r.y + r.h - 4, Math.min(6, r.w - i * 6), 4, i % 2 ? '#f2c230' : '#2a2a2a');
+    cone(g, r.x + 4, r.y + r.h - 12); cone(g, r.x + r.w - 11, r.y + r.h - 12);
+  },
+  interior(g, r){
+    g.R(r.x + 10, r.y + 2, 38, 13, '#7a5632'); g.R(r.x + 11, r.y + 3, 36, 11, '#fff6dc');
+    ['#e05a5a', '#e0b45a', '#5aa0e0', '#6aa86a', '#9b7bdc', '#d8d0c0'].forEach((c, i) => g.R(r.x + 13 + i * 6, r.y + 5, 5, 7, c));
+    plant(g, r.x + 3, r.y + r.h - 14); plant(g, r.x + r.w - 11, r.y + r.h - 14);
+  },
+  tamu(g, r){
+    g.R(r.x + 3, r.y + 3, 16, 11, '#4a3320'); g.R(r.x + 4, r.y + 4, 14, 9, '#8fcdf2'); g.R(r.x + 4, r.y + 9, 14, 4, '#6fb36a');
+    g.R(r.x + r.w - 19, r.y + 3, 16, 11, '#4a3320'); g.R(r.x + r.w - 18, r.y + 4, 14, 9, '#f2c9a0'); g.R(r.x + r.w - 14, r.y + 6, 6, 5, '#c0463c');
+    sofa(g, r.x + 10, r.y + 24, 44);
+    g.R(r.x + 62, r.y + 40, 24, 8, '#7a5632'); g.R(r.x + 62, r.y + 40, 24, 1, '#a07848');
+    plant(g, r.x + r.w - 14, r.y + r.h - 14);
+  },
+  resepsionis(g, r){
+    plant(g, r.x + 3, r.y + r.h - 14); plant(g, r.x + r.w - 12, r.y + r.h - 14);
+  },
+  keamanan(g, r){
+    const sc = (x) => { g.R(x, r.y + 3, 15, 11, '#1a1d2e'); g.R(x + 1, r.y + 4, 13, 9, '#0d1424'); g.R(x + 2, r.y + 5, 5, 3, '#2a5a48'); g.R(x + 8, r.y + 5, 5, 3, '#2a4a5a'); g.R(x + 2, r.y + 9, 11, 3, '#2a3a4a'); };
+    [8, 26, 44].forEach(dx => sc(r.x + dx)); [r.w - 59, r.w - 41, r.w - 23].forEach(dx => sc(r.x + dx));
+  }
+};
+
+/* ============ Lapisan statis ============ */
+function drawRoofTop(g, L){
+  const y = L.y;
+  // dek atap
+  g.R(IX0 - 4, y + 52, IX1 - IX0 + 8, 24, '#1f2340');
+  g.R(IX0, y + 52, IX1 - IX0, 20, '#6d7390');
+  for (let x = IX0; x < IX1; x += 20) g.R(x, y + 52, 1, 20, '#5d6380');
+  g.R(IX0, y + 52, IX1 - IX0, 1, '#8a90ad'); g.R(IX0, y + 71, IX1 - IX0, 1, '#565c78');
+  // pagar depan
+  g.R(IX0 - 4, y + 44, 4, 8, '#1f2340'); g.R(IX1, y + 44, 4, 8, '#1f2340');
+  // papan nama ALCA
+  g.R(40, y + 40, 3, 14, '#2c3042'); g.R(112, y + 40, 3, 14, '#2c3042');
+  g.R(34, y + 12, 86, 30, '#1f2340'); g.R(36, y + 14, 82, 26, '#2a3060'); g.R(36, y + 14, 82, 1, '#4350a0');
+  g.T('ALCA', 77, y + 33, 15, '#ffd98a', 'center');
+  // pusat tangga atap
+  g.R(364, y + 26, 54, 28, '#7d8296'); g.R(364, y + 26, 54, 3, '#9aa0b8'); g.R(386, y + 36, 10, 18, '#3a4058'); g.R(388, y + 38, 6, 16, '#8fcdf2');
+  g.R(402, y + 34, 10, 8, '#c8d0e8'); g.R(404, y + 36, 6, 4, '#8a90ad');
+  // tangki air + antena
+  g.R(430, y + 36, 14, 16, '#a0a8c0'); g.R(430, y + 36, 14, 3, '#c8d0e8'); g.R(432, y + 52, 2, 3, '#555'); g.R(440, y + 52, 2, 3, '#555');
+  g.R(150, y + 22, 2, 30, '#555'); g.R(146, y + 28, 10, 1, '#555'); g.R(147, y + 34, 8, 1, '#555');
+  // helipad
+  const cx = 238, cy = y + 62;
+  ellipse(g, cx, cy, 52, 9, '#f2c230'); ellipse(g, cx, cy, 49, 7, '#363b54');
+  g.R(cx - 10, cy - 4, 3, 9, '#f4f4f4'); g.R(cx + 7, cy - 4, 3, 9, '#f4f4f4'); g.R(cx - 7, cy - 1, 14, 3, '#f4f4f4');
+}
+function drawRoom(g, r){
+  const th = r.theme, ry = r.y;
+  g.R(r.x, ry, r.w, r.h, th[1]);
+  for (let ty = 0; ry + 16 + ty * 12 < ry + r.h; ty++){
+    for (let tx = 0; tx * 12 < r.w; tx++){
+      if ((tx + ty) % 2) continue;
+      const x = r.x + tx * 12, y = ry + 16 + ty * 12;
+      g.R(x, y, Math.min(12, r.x + r.w - x), Math.min(12, ry + r.h - y), th[2]);
+    }
+  }
+  g.R(r.x, ry, r.w, 16, th[0]);
+  g.R(r.x, ry, r.w, 2, shade(th[0], -28)); g.R(r.x, ry + 14, r.w, 2, shade(th[0], -34)); g.R(r.x, ry + 2, r.w, 1, shade(th[0], 22));
+}
+function plaque(g, r, text){
+  const nm = text.toUpperCase();
+  let size = 6.4; while (g.M(nm, size) > r.w - 22 && size > 4.2) size -= 0.4;
+  const tw = g.M(nm, size), pw = tw + 10, px = r.x + (r.w - pw) / 2;
+  g.R(px, r.y + 3, pw, 10, '#1f2340'); g.R(px + 1, r.y + 4, pw - 2, 8, '#fff6dc');
+  g.T(nm, r.x + r.w / 2, r.y + 3 + 7.2, size, '#2a2a3a', 'center');
+}
+function pcFrame(g, cx, ry){
+  g.R(cx - 5, ry, 10, 7, '#2c3042'); g.R(cx - 1, ry + 7, 2, 1, '#2c3042');
+  g.R(cx - 11, ry + 8, 22, 4, '#c99a68'); g.R(cx - 11, ry + 8, 22, 1, '#e2b985'); g.R(cx - 11, ry + 12, 22, 1, '#9a6f42');
+  g.R(cx - 4, ry + 9, 8, 2, '#8d93a8');
+  g.R(cx - 5, ry + 14, 10, 2, '#3a3f5c');
+}
+const PC_COLS = 5, PC_ROWS = 5;
+function pcPos(h, i, j){ return { cx: h.x + 4 + 14 + 28 * i, ry: HY + 24 + 15 * j }; }
+
+function drawHouse(g, h){
+  const bx = h.x, by = HY, r = ROOM[h.id];
+  // papan atap
+  g.R(bx + 12, by - 17, 124, 15, '#1f2340'); g.R(bx + 13, by - 16, 122, 13, '#2a3060'); g.R(bx + 13, by - 16, 122, 1, '#4350a0');
+  g.T('GEDUNG ' + h.code, bx + 74, by - 6, 7.5, '#ffd98a', 'center');
+  g.R(bx + 30, by - 2, 3, 2, '#2c3042'); g.R(bx + 115, by - 2, 3, 2, '#2c3042');
+  // badan
+  g.R(bx, by, HW, HH, '#1f2340');
+  drawRoom(g, r);
+  plaque(g, r, 'Game house · 25 meja komputer');
+  for (let j = 0; j < PC_ROWS; j++) for (let i = 0; i < PC_COLS; i++){ const p = pcPos(h, i, j); pcFrame(g, p.cx, p.ry); }
+  plant(g, bx + HW - 14, by + HH - 22);
+  // tanah
+  g.R(bx - 4, by + HH, HW + 8, 10, '#2d3b2f'); g.R(bx - 4, by + HH, HW + 8, 2, '#3f5a40');
+}
+
+function drawStatic(g, phase){
+  const sk = SKY[phase];
+  g.R(0, 0, W, 300, sk[0]); g.R(0, 300, W, 300, sk[1]); g.R(0, 600, W, H - 600, sk[2]);
+  if (phase === 'night' || phase === 'dusk'){
+    let s = 11;
+    for (let i = 0; i < 54; i++){ s = (s * 1103515245 + 12345) & 0x7fffffff; const x = s % W; s = (s * 1103515245 + 12345) & 0x7fffffff; const y = s % 660; g.R(x, y, 1, 1, phase === 'night' ? '#dfe4ff' : '#f8d8e0'); }
+  }
+  if (phase === 'night'){ disc(g, 396, 28, 7, '#f4f1d8'); disc(g, 399, 26, 6, sk[0]); }
+  else if (phase === 'day'){ disc(g, 396, 28, 7, '#ffe27a'); g.R(388, 14, 16, 1, '#ffe9a0'); }
+  else { disc(g, 396, 34, 7, '#ffd08a'); }
+  if (phase === 'day'){
+    [[64, 24, 28], [150, 6, 22], [312, 34, 26], [420, 60, 22], [30, 690, 26], [250, 658, 24], [440, 668, 24]].forEach(([x, y, w]) => { g.R(x, y + 4, w, 5, '#ffffff'); g.R(x + 4, y, w - 12, 5, '#ffffff'); g.R(x, y + 8, w, 1, '#d6ecfa'); });
+  }
+  // menara Alca: badan luar
+  g.R(IX0 - 4, 90, IX1 - IX0 + 8, 622 - 90, '#1f2340');
+  drawRoofTop(g, LEVELS[0]);
+  for (const r of ROOMS){
+    if (r.house) continue;
+    drawRoom(g, r); plaque(g, r, r.name);
+    DECO[r.id] && DECO[r.id](g, r);
+  }
+  // sekat kaca antar ruangan (lorong depan tetap terbuka)
+  for (const r of ROOMS){ if (r.house) continue; if (r.x > IX0) g.R(r.x - 2, r.y, 2, 50, '#1f2340'); }
+  // pelat nomor lantai
+  for (const L of LEVELS){
+    g.R(2, L.y + 6, 20, 14, '#1f2340'); g.R(3, L.y + 7, 18, 12, '#2a3060'); g.R(3, L.y + 7, 18, 1, '#4350a0');
+    g.T(L.label, 12, L.y + (L.roof ? 15.5 : 17), L.roof ? 5.6 : 9, '#ffd98a', 'center');
+  }
+  // lift kaca di sisi kanan
+  g.R(457, 44, 20, 578, '#1f2340'); g.R(459, 46, 16, 574, '#27325a'); g.R(466, 46, 1, 574, '#3a4880');
+  for (const L of LEVELS) g.R(459, L.y + 73, 16, 1, '#4a5a98');
+  // trotoar, jalan
+  g.R(0, 622, W, 10, '#59608a'); g.R(0, 622, W, 1, '#7a82aa');
+  [34, 118, 214, 308, 392].forEach(x => { g.R(x, 624, 14, 7, '#3fa34d'); g.R(x + 2, 623, 10, 2, '#5fd068'); });
+  g.R(0, 632, W, 18, '#2b2f45'); for (let x = 6; x < W; x += 30) g.R(x, 641, 14, 2, '#d8c46a');
+  g.T('CABANG GAME HOUSE', W / 2, 666, 6, phase === 'day' ? '#2a3a5a' : '#aab0cf', 'center');
+  for (const h of HOUSES) drawHouse(g, h);
+  g.R(0, HY + HH + 10, W, H - HY - HH - 10, '#2d3b2f');
+}
+
+/* ============ Karakter ============ */
+function drawPerson(g, ox, oy, L, o){
+  const b = o.bob ? 1 : 0, hy = oy + b, f = !!L.f, skin = L.skin, hair = L.hair, A = L.acc || '', has = k => A.indexOf(k) >= 0;
+  if (L.style === 'long') g.R(ox + 1, hy + 1, 10, 12, hair);
+  else if (L.style === 'bob') g.R(ox + 1, hy + 1, 10, 8, hair);
+  const shirt = L.shirt;
+  g.R(ox + 1, oy + 9, 10, 7, shirt); g.R(ox, oy + 10, 1, 6, shirt); g.R(ox + 11, oy + 10, 1, 6, shirt);
+  g.R(ox + 1, oy + 15, 10, 1, 'rgba(0,0,0,0.14)');
+  if (has('suit')){ g.R(ox + 4, oy + 9, 4, 5, '#f4f4f4'); g.R(ox + 5, oy + 10, 2, 5, '#c0392b'); }
+  if (has('tie')){ g.R(ox + 4, oy + 9, 4, 3, '#f4f4f4'); g.R(ox + 5, oy + 10, 2, 5, '#2b3a8a'); }
+  if (has('badge')) g.R(ox + 8, oy + 11, 2, 2, '#f2c230');
+  if (has('apron')){ g.R(ox + 3, oy + 10, 6, 6, '#e9f3f2'); g.R(ox + 3, oy + 10, 6, 1, '#c3dad7'); }
+  if (L.style === 'long'){ g.R(ox + 1, oy + 9, 2, 5, hair); g.R(ox + 9, oy + 9, 2, 5, hair); }
+  g.R(ox + 5, oy + 9, 2, 1, skin);
+  g.R(ox + 2, hy + 1, 8, 8, skin);
+  g.R(ox + 2, hy, 8, 3, hair);
+  if (!f){ g.R(ox + 2, hy + 3, 1, 2, hair); g.R(ox + 9, hy + 3, 1, 2, hair); }
+  else { g.R(ox + 2, hy + 3, 3, 1, hair); }
+  if (L.style === 'ponytail'){ g.R(ox + 10, hy + 2, 2, 7, hair); g.R(ox + 10, hy + 2, 2, 1, '#e86f8f'); }
+  const eye = o.blink ? shade(skin, -45) : '#23202e';
+  if (has('glasses')){
+    g.R(ox + 3, hy + 4, 3, 3, '#1d1d2b'); g.R(ox + 6, hy + 4, 3, 3, '#1d1d2b');
+    g.R(ox + 4, hy + 5, 1, 1, o.blink ? shade(skin, -20) : '#cfe9ff'); g.R(ox + 7, hy + 5, 1, 1, o.blink ? shade(skin, -20) : '#cfe9ff');
+  } else { g.R(ox + 4, hy + 5, 1, 1, eye); g.R(ox + 7, hy + 5, 1, 1, eye); }
+  g.R(ox + 5, hy + 7, 2, 1, '#a8554f');
+  if (f){ g.R(ox + 3, hy + 6, 1, 1, 'rgba(255,110,140,0.5)'); g.R(ox + 8, hy + 6, 1, 1, 'rgba(255,110,140,0.5)'); }
+  if (has('headset')){ g.R(ox + 1, hy + 3, 2, 4, '#2a2a3a'); g.R(ox + 9, hy + 3, 2, 4, '#2a2a3a'); g.R(ox + 2, hy - 1, 8, 1, '#2a2a3a'); g.R(ox + 2, hy + 7, 3, 1, '#2a2a3a'); }
+  if (has('chef')){ g.R(ox + 2, hy - 1, 8, 3, '#f4f4f4'); g.R(ox + 3, hy - 4, 6, 4, '#f4f4f4'); g.R(ox + 4, hy - 5, 4, 1, '#f4f4f4'); g.R(ox + 2, hy + 1, 8, 1, '#d8d8e0'); }
+  if (has('beret')){ g.R(ox + 1, hy, 10, 2, '#c0463c'); g.R(ox + 3, hy - 1, 6, 1, '#c0463c'); g.R(ox + 6, hy - 2, 1, 1, '#a03228'); }
+  if (has('cap')){
+    const cc = L.cap || shade(shirt, -6);
+    g.R(ox + 2, hy - 1, 8, 4, cc); g.R(ox + 1, hy + 2, 10, 1, shade(cc, -28)); g.R(ox + 5, hy, 2, 1, '#f2c230');
+  }
+  if (o.stand){
+    const pants = '#3b4260', shoe = '#1e1c26', s = o.step ? 1 : 0, lh = s ? 5 : 4, rh = s ? 4 : 5;
+    g.R(ox + 3, oy + 16, 3, lh, pants); g.R(ox + 6, oy + 16, 3, rh, pants);
+    g.R(ox + 3, oy + 16 + lh, 3, 1, shoe); g.R(ox + 6, oy + 16 + rh, 3, 1, shoe);
+    g.R(ox, oy + 16, 1, 1, skin); g.R(ox + 11, oy + 16, 1, 1, skin);
+    g.R(ox + 1, oy + 22, 10, 2, 'rgba(0,0,0,0.15)');
+  }
+}
+function monitor(g, x, y, t, seed){
+  g.R(x, y, 10, 8, '#2c3042'); g.R(x + 1, y + 1, 8, 6, '#0d1424');
+  for (let i = 0; i < 4; i++){ const h = 1 + ((Math.floor(t * 1.4) + i * 2 + seed) % 5); g.R(x + 1 + i * 2, y + 7 - h, 1, h, i % 2 ? '#7ee2a8' : '#ffd166'); }
+  g.R(x + 4, y + 8, 2, 1, '#2c3042'); g.R(x + 2, y + 9, 6, 1, '#2c3042');
+}
+function deskItem(g, kind, cx, oy, dw){
+  const e = Math.min(13, dw / 2 - 5);
+  switch (kind){
+    case 'mug': g.R(cx + e, oy + 14, 3, 3, '#ffffff'); g.R(cx + e, oy + 14, 3, 1, '#6b4226'); g.R(cx + e + 3, oy + 15, 1, 1, '#ffffff'); break;
+    case 'plant': g.R(cx + e, oy + 15, 3, 2, '#b5651d'); g.R(cx + e - 1, oy + 12, 5, 3, '#3fa34d'); g.R(cx + e + 1, oy + 11, 1, 1, '#5fd068'); break;
+    case 'papers': g.R(cx + e - 1, oy + 14, 5, 4, '#f2f2ee'); g.R(cx + e, oy + 15, 3, 1, '#9aa0b8'); break;
+    case 'coins': g.R(cx + e, oy + 15, 4, 2, '#f2c230'); g.R(cx + e, oy + 14, 4, 1, '#ffe27a'); g.R(cx + e + 1, oy + 13, 2, 1, '#f2c230'); break;
+    case 'hardhat': g.R(cx + 11, oy + 13, 6, 3, '#f2c230'); g.R(cx + 10, oy + 16, 8, 1, '#d8a820'); break;
+    case 'blueprint': g.R(cx - 14, oy + 14, 10, 4, '#9bc4f0'); g.R(cx - 13, oy + 15, 8, 1, '#ffffff'); g.R(cx - 13, oy + 17, 5, 1, '#ffffff'); break;
+    case 'swatch': g.R(cx + 11, oy + 14, 2, 4, '#e05a5a'); g.R(cx + 13, oy + 14, 2, 4, '#e0b45a'); g.R(cx + 15, oy + 14, 2, 4, '#5aa0e0'); break;
+    case 'bell': g.R(cx + e, oy + 16, 4, 1, '#8a6a1a'); g.R(cx + e + 1, oy + 14, 2, 2, '#f2c230'); g.R(cx + e + 1, oy + 13, 2, 1, '#ffe27a'); break;
+    case 'lamp': g.R(cx + 13, oy + 9, 1, 6, '#555'); g.R(cx + 11, oy + 8, 5, 2, '#ffe27a'); break;
+  }
+}
+
+/* Profil acak yang tetap (berdasarkan id): umur awal paling tinggi 40, lalu naik sendiri sesuai tanggal lahir. */
+const GOOD = ['Rajin', 'Teliti', 'Ramah', 'Sabar', 'Jujur', 'Tekun', 'Sopan', 'Cekatan', 'Telaten', 'Disiplin', 'Hangat', 'Tulus', 'Rapi', 'Gigih', 'Santun', 'Ceria', 'Tenang', 'Sigap', 'Cermat', 'Setia'];
+function randomProfile(id){
+  const r = k => hash(id + '#' + k), p2 = n => String(n).padStart(2, '0');
+  const idx = []; for (let k = 0; idx.length < 3; k++){ const i = r('t' + k) % GOOD.length; if (idx.indexOf(i) < 0) idx.push(i); }
+  return { f: r('g') % 100 < 40, lahir: (1986 + r('y') % 19) + '-' + p2(1 + r('m') % 12) + '-' + p2(1 + r('d') % 28), sifat: idx.map(i => GOOD[i]).join(', ') };
+}
+
+/* ============ Entitas duduk & pejalan ============ */
+const ents = [], walkers = [];
+{
+  const byRoom = {};
+  for (const d of DATA) if (!d.wander) (byRoom[d.room] = byRoom[d.room] || []).push(d);
+  for (const d of DATA){
+    const e = Object.assign({}, d);
+    e.look = Object.assign({}, d.look || {});
+    e.look.f = d.gender === P;
+    e.phase = (hash(d.id) % 100) / 100;
+    e.bobPer = 0.9 + (hash(d.id) % 6) / 10;
+    const r = ROOM[d.room];
+    e.loc = r.building + (r.where ? ' · ' + r.where : '') + ' · ' + r.name;
+    if (!d.wander){
+      const list = byRoom[d.room], i = list.indexOf(d), n = list.length;
+      const pitch = Math.min(r.w / n, r.maxPitch || 72);
+      const cx = Math.round(r.x + r.w * (r.ax == null ? .5 : r.ax) + (i - (n - 1) / 2) * pitch);
+      e.dw = d.dw || Math.min(40, Math.floor(pitch - 6));
+      e.pos = { cx, oy: r.oy };
+      const hw = Math.min(Math.floor(pitch / 2) - 1, 26);
+      e.hit = { x: cx - Math.max(hw, e.dw / 2 + 1), y: r.oy - 6, w: 2 * Math.max(hw, e.dw / 2 + 1), h: 44 };
+      e.base = r.oy + 26;
+      ents.push(e);
+    } else {
+      e.walker = true; e.kind = 'iray'; e.tool = null;
+      const L = ROOM.gh.level;
+      e.bx = [IX0 + 6, IX1 - 18]; e.by = [L.y + 39, L.y + 49];
+      walkers.push(e);
+    }
+  }
+  // 3 petugas kebersihan di tiap lantai (kecuali lantai direktur) dan tiap game house
+  const TOOLS = [['broom', 'Menyapu lantai'], ['mop', 'Mengepel lantai'], ['cloth', 'Mengelap kaca dan dinding']];
+  const areas = [];
+  for (const L of LEVELS) if (L.id !== 'l8') areas.push({ key: L.id, loc: 'Gedung Alca · ' + L.title, bx: [IX0 + 6, IX1 - 18], by: [L.y + 39, L.y + 49] });
+  for (const h of HOUSES) areas.push({ key: h.id, loc: h.title, bx: [h.x + 8, h.x + HW - 26], by: [HY + 80, HY + 94] });
+  for (const a of areas) for (let k = 0; k < 3; k++){
+    const id = 'cl-' + a.key + '-' + k, pr = randomProfile(id), hv = hash(id);
+    walkers.push({
+      id, walker: true, anon: true, kind: 'clean', tool: TOOLS[k][0], nama: 'Petugas kebersihan', tugas: TOOLS[k][1], loc: a.loc, room: null,
+      gender: pr.f ? P : Lk, lahir: pr.lahir, sifat: pr.sifat,
+      look: { skin: SEC_SKIN[hv % 4], hair: ['#1e1e28', '#2a1d1a', '#3a2a20', '#4a2f1e'][(hv >> 3) % 4], shirt: '#2fa7a0', style: pr.f ? 'ponytail' : 'short', acc: 'cap apron', cap: '#e9f3f2', f: pr.f },
+      bx: a.bx, by: a.by, slot: k, phase: (hv % 628) / 100
+    });
+  }
+  for (const w of walkers){
+    if (w.kind === 'clean'){ const span = (w.bx[1] - w.bx[0]) / 3; w.x = w.bx[0] + span * (w.slot + .15 + Math.random() * .7); w.pdir = Math.random() < .5 ? 1 : -1; }
+    else w.x = w.bx[0] + Math.random() * (w.bx[1] - w.bx[0]);
+    w.y = w.by[0] + Math.random() * (w.by[1] - w.by[0]);
+    w.tx = w.x; w.ty = w.y; w.dir = Math.random() < .5 ? 1 : -1;
+    w.state = 'wait'; w.wait = w.kind === 'iray' ? Math.random() * 3 : 1 + Math.random() * 8; w.moving = false; w.step = 0; w.stepT = 0;
+    w.speed = w.kind === 'iray' ? 15 : 5 + Math.random() * 1.5;
+    w.phase = w.phase || 1.3;
+  }
+}
+const all = ents.concat(walkers);
+const byId = Object.fromEntries(all.map(e => [e.id, e]));
+
+function pickTarget(w){
+  if (w.kind === 'iray'){
+    let n = 0;
+    do { w.tx = w.bx[0] + Math.random() * (w.bx[1] - w.bx[0]); w.ty = w.by[0] + Math.random() * (w.by[1] - w.by[0]); } while (Math.abs(w.tx - w.x) < 20 && ++n < 8);
+    return;
+  }
+  // petugas kebersihan: geser pelan searah, baru berbalik di ujung lantai
+  const step = 26 + Math.random() * 26;
+  let tx = w.x + w.pdir * step;
+  if (tx > w.bx[1] || tx < w.bx[0]){ w.pdir = -w.pdir; tx = w.x + w.pdir * step; }
+  w.tx = Math.max(w.bx[0], Math.min(w.bx[1], tx));
+  w.ty = w.by[0] + Math.random() * (w.by[1] - w.by[0]);
+}
+function updateWalker(w, dt){
+  if (reduce) return;
+  if (w.state === 'wait'){
+    w.wait -= dt; w.moving = false;
+    if (w.wait <= 0){ pickTarget(w); w.state = 'walk'; }
+    return;
+  }
+  const dx = w.tx - w.x, dy = w.ty - w.y, dist = Math.hypot(dx, dy);
+  if (dist < 0.8){ w.state = 'wait'; w.wait = w.kind === 'iray' ? 1.5 + Math.random() * 3.5 : 11 + Math.random() * 10; w.moving = false; return; }
+  const m = Math.min(w.speed * dt, dist);
+  w.x += dx / dist * m; w.y += dy / dist * m; w.moving = true;
+  if (Math.abs(dx) > .5) w.dir = dx > 0 ? 1 : -1;
+  w.stepT += dt; if (w.stepT > 0.25){ w.stepT = 0; w.step ^= 1; }
+}
+function walkHit(w){ return { x: w.x - 3, y: w.y - 6, w: 18, h: 33 }; }
+
+/* ----- lift ----- */
+const STOPS = LEVELS.map(L => L.y + 73 - 22);
+const elev = { y: STOPS[7], ty: STOPS[7], wait: 2 };
+function updateElev(dt){
+  if (reduce) return;
+  if (Math.abs(elev.ty - elev.y) < .6){
+    elev.wait -= dt;
+    if (elev.wait <= 0){ let k; do { k = Math.floor(Math.random() * STOPS.length); } while (STOPS[k] === elev.ty); elev.ty = STOPS[k]; elev.wait = 2.5 + Math.random() * 3; }
+  } else elev.y += Math.sign(elev.ty - elev.y) * Math.min(40 * dt, Math.abs(elev.ty - elev.y));
+}
+
+/* ============ Render dinamis ============ */
+function drawDesk(g, e){
+  const { cx, oy } = e.pos, w = e.dw, dx = cx - w / 2;
+  g.R(dx + 2, oy + 28, w - 4, 2, 'rgba(0,0,0,0.10)');
+  g.R(dx + 1, oy + 24, 3, 4, '#6e4c2b'); g.R(dx + w - 4, oy + 24, 3, 4, '#6e4c2b');
+  g.R(dx, oy + 19, w, 5, '#9a6f42'); g.R(dx, oy + 23, w, 1, '#7a5632');
+  g.R(dx, oy + 13, w, 6, '#c99a68'); g.R(dx, oy + 13, w, 1, '#e2b985');
+}
+function drawEntity(g, e, t, posting){
+  const { cx, oy } = e.pos, ox = cx - 6;
+  g.R(ox - 1, oy + 7, 14, 11, '#3a3f5c'); g.R(ox - 1, oy + 7, 14, 1, '#555c85'); g.R(ox - 1, oy + 17, 14, 1, '#2c3048');
+  if (!e.empty){
+    const per = posting ? 0.22 : e.bobPer;
+    const bob = reduce ? 0 : (Math.floor(t / per + e.phase * 10) % 2);
+    const blink = !reduce && ((t + e.phase * 7) % 4.3) < 0.13;
+    drawPerson(g, ox, oy, e.look, { bob, blink });
+  }
+  drawDesk(g, e);
+  if (e.mon === 'dual'){ monitor(g, cx - 20, oy + 5, t, 1); monitor(g, cx + 10, oy + 5, t, 3); }
+  else if (e.mon === 'single'){ monitor(g, cx + 7, oy + 5, t, hash(e.id) % 5); }
+  else if (e.mon === 'hn'){ monitor(g, cx - 24, oy + 4, t, 2); g.R(cx - 8, oy + 20, 16, 3, '#d6a84a'); g.R(cx - 8, oy + 20, 16, 1, '#f0c96a'); }
+  if (!e.empty && e.mon !== 'dual'){
+    g.R(cx - 5, oy + 11, 10, 5, '#8d93a8'); g.R(cx - 5, oy + 11, 10, 1, '#aab0c4'); g.R(cx - 1, oy + 13, 2, 1, '#f4f4f8'); g.R(cx - 6, oy + 16, 12, 1, '#6c728a');
+  }
+  if (e.item) deskItem(g, e.item, cx, oy, e.dw);
+}
+function drawTool(g, w, t){
+  const ox = w.x, oy = w.y, d = w.dir, working = w.state === 'wait';
+  const hx = Math.round(d > 0 ? ox + 12 : ox - 2), ph = w.phase, skin = w.look.skin;
+  if (w.tool === 'broom' || w.tool === 'mop'){
+    const sw = working ? Math.sin(t * 6 + ph) * 3.2 : 0;
+    for (let i = 0; i <= 11; i++) g.R(hx + Math.round(sw * i / 11), oy + 11 + i, 1, 1, '#8a6a42');
+    g.R(hx - 1, oy + 12, 3, 2, skin);
+    const bx = hx + Math.round(sw);
+    if (w.tool === 'broom'){
+      g.R(bx - 2, oy + 22, 5, 1, '#8a6a42'); g.R(bx - 2, oy + 23, 5, 2, '#d6a84a'); g.R(bx - 3, oy + 25, 7, 1, '#b8862f');
+      if (working){ const k = (t * 3 + ph) % 1; g.R(bx + d * (4 + Math.round(k * 4)), oy + 23 - Math.round(k * 4), 1, 1, 'rgba(235,230,215,' + (1 - k).toFixed(2) + ')'); const k2 = (t * 3 + ph + .5) % 1; g.R(bx - d * (3 + Math.round(k2 * 3)), oy + 24 - Math.round(k2 * 3), 1, 1, 'rgba(235,230,215,' + (1 - k2).toFixed(2) + ')'); }
+    } else {
+      g.R(bx - 3, oy + 22, 7, 2, '#e6edf5'); g.R(bx - 3, oy + 24, 7, 1, '#8fb7d9'); g.R(bx - 3, oy + 25, 1, 1, '#8fb7d9'); g.R(bx + 3, oy + 25, 1, 1, '#8fb7d9');
+      if (working) g.R(bx - 5 - d * 2, oy + 26, 11, 1, 'rgba(130,185,235,0.55)');
+    }
+  } else {
+    if (working){
+      const a = t * 6 + ph, hxc = Math.round((d > 0 ? ox + 14 : ox - 3) + Math.cos(a) * 2.5), hyc = Math.round(oy + 8 + Math.sin(a) * 2.5);
+      g.R(Math.round((d > 0 ? ox + 11 : ox) + (hxc - (d > 0 ? ox + 11 : ox)) / 2), Math.round(oy + 11 + (hyc - (oy + 11)) / 2), 1, 2, skin);
+      g.R(hxc - 2, hyc - 1, 4, 3, '#f2d04a'); g.R(hxc - 2, hyc - 1, 4, 1, '#ffe98a');
+      if (Math.sin(a) > .55){ const sx = hxc + d * 4, sy = hyc - 3; g.R(sx, sy, 1, 1, '#ffffff'); g.R(sx - 1, sy, 3, 1, 'rgba(255,255,255,0.7)'); g.R(sx, sy - 1, 1, 3, 'rgba(255,255,255,0.7)'); }
+    } else { g.R(hx - 1, oy + 13, 3, 3, '#f2d04a'); g.R(hx - 1, oy + 15, 3, 1, '#d8b830'); }
+  }
+}
+function drawHeli(g, t, y){
+  const cx = 238, spin = reduce ? false : (t % 22) < 7;
+  g.R(cx - 30, y + 44, 18, 3, '#d94a3d'); g.R(cx - 32, y + 38, 3, 9, '#b83a30'); g.R(cx - 33, y + 40, 1, 5, spin && Math.floor(t * 18) % 2 ? '#2a2a3a' : '#555a70');
+  g.R(cx - 13, y + 41, 26, 12, '#d94a3d'); g.R(cx - 13, y + 41, 26, 2, '#f0705f'); g.R(cx - 13, y + 51, 26, 2, '#b83a30');
+  g.R(cx + 3, y + 43, 10, 6, '#9fd8f5'); g.R(cx + 3, y + 43, 10, 1, '#d4f0fb'); g.R(cx - 4, y + 43, 6, 4, '#e9eef8');
+  g.R(cx - 11, y + 56, 24, 1, '#2a2a3a'); g.R(cx - 7, y + 53, 1, 3, '#2a2a3a'); g.R(cx + 6, y + 53, 1, 3, '#2a2a3a');
+  g.R(cx - 1, y + 37, 2, 4, '#2a2a3a');
+  if (spin){
+    g.R(cx - 30, y + 36, 60, 3, 'rgba(40,40,60,0.20)');
+    const f = Math.floor(t * 20) % 2; g.R(cx - (f ? 30 : 22), y + 37, f ? 60 : 44, 1, '#2a2a3a');
+  } else { g.R(cx - 28, y + 37, 26, 1, '#2a2a3a'); g.R(cx + 3, y + 38, 25, 1, '#2a2a3a'); }
+}
+function drawBubble(g, cx, y, t){
+  const w = 40, h = 11, x = cx - w / 2, line = '#2a2a3a', n = reduce ? 2 : Math.floor(t * 2.5) % 3;
+  g.R(x + 1, y, w - 2, 1, line); g.R(x + 1, y + h - 1, w - 2, 1, line); g.R(x, y + 1, 1, h - 2, line); g.R(x + w - 1, y + 1, 1, h - 2, line);
+  g.R(x + 1, y + 1, w - 2, h - 2, '#ffffff');
+  g.R(cx - 2, y + h - 1, 4, 1, '#ffffff'); g.R(cx - 2, y + h, 1, 1, line); g.R(cx + 1, y + h, 1, 1, line); g.R(cx - 1, y + h, 2, 1, '#ffffff'); g.R(cx - 1, y + h + 1, 2, 1, line);
+  g.T('posting', x + 4, y + 7.6, 5.6, line, 'left');
+  for (let i = 0; i < 3; i++) g.R(x + w - 10 + i * 3, y + h - 4, 2, 2, i <= n ? line : '#cfd3e6');
+}
+function drawArrow(g, cx, y, col){ g.R(cx - 2, y, 5, 1, col); g.R(cx - 1, y + 1, 3, 1, col); g.R(cx, y + 2, 1, 1, col); }
+function pill(g, txt, cx, base, size, bg, fg){
+  const tw = g.M(txt, size);
+  g.R(cx - tw / 2 - 2, base - size + .3, tw + 4, size + 1.7, bg);
+  g.T(txt, cx, base, size, fg, 'center');
+}
+
+let hoverId = null, selId = null, S = 2, G = null, stat = null, ctx = null, canvas = null, phase = 'day';
+const PCS = [];
+for (const h of HOUSES) for (let j = 0; j < PC_ROWS; j++) for (let i = 0; i < PC_COLS; i++){ const p = pcPos(h, i, j); PCS.push({ cx: p.cx, ry: p.ry, sd: hash(h.id + i + '-' + j) }); }
+const PCCOL = ['#7ee2a8', '#7ee2f0', '#ffd166', '#e86fa8', '#9b7bdc'];
+
+function render(ts){
+  const t = ts / 1000, sec = wibSec(nowMs());
+  ctx.drawImage(stat, 0, 0);
+  const g = G;
+  // layar komputer game house
+  for (const p of PCS){
+    const f = reduce ? 0 : Math.floor(t * 1.6 + p.sd % 7);
+    g.R(p.cx - 4, p.ry + 1, 8, 5, '#0d1424');
+    g.R(p.cx - 3, p.ry + 2, 3, 1, PCCOL[(p.sd + f) % 5]); g.R(p.cx + 1, p.ry + 3, 3, 1, PCCOL[(p.sd + f + 2) % 5]); g.R(p.cx - 3, p.ry + 4, 5, 1, PCCOL[(p.sd + f + 4) % 5]);
+  }
+  // lift, helikopter, lampu antena
+  const eg = G; eg.R(461, elev.y, 12, 22, '#e8c46a'); eg.R(462, elev.y + 1, 10, 20, '#fff0b8'); eg.R(466, elev.y + 3, 1, 19, '#c9a24a'); eg.R(462, elev.y, 10, 1, '#fff');
+  drawHeli(g, t, LEVELS[0].y);
+  g.R(150, LEVELS[0].y + 20, 2, 2, (reduce || Math.floor(t * 1.2) % 2) ? '#ff5a5a' : '#7a2a2a');
+  // urut berdasarkan garis dasar: yang lebih bawah digambar lebih akhir
+  const order = [];
+  for (const e of ents) order.push({ e, k: e.base });
+  for (const w of walkers) order.push({ e: w, k: w.y + 22 });
+  order.sort((a, b) => a.k - b.k);
+  const status = {};
+  for (const e of all) status[e.id] = isPosting(e.id, sec);
+  for (const { e } of order){
+    if (e.walker){
+      drawPerson(g, Math.round(e.x), Math.round(e.y), e.look, { stand: true, step: e.moving ? e.step : 0, bob: false, blink: !reduce && ((t + e.phase * 7) % 4.3) < 0.13 });
+      if (e.tool){ const sx = e.x, sy = e.y; e.x = Math.round(sx); e.y = Math.round(sy); drawTool(g, e, reduce ? 0 : t); e.x = sx; e.y = sy; }
+    } else drawEntity(g, e, t, status[e.id]);
+  }
+  // label nama, sorotan, gelembung, penanda
+  for (const e of ents){
+    if (e.empty) continue;
+    const sel = selId === e.id, hov = hoverId === e.id;
+    if (e.anon && !sel && !hov) continue;
+    pill(g, e.nama, e.pos.cx, e.pos.oy + 35, 6.5, sel ? '#ffb454' : hov ? '#ffe2b0' : 'rgba(255,248,230,0.92)', '#2a2a3a');
+  }
+  const iray = byId.iray;
+  pill(g, iray.nama, iray.x + 6, iray.y - 3, 6, 'rgba(30,32,50,0.9)', '#ffffff');
+  for (const e of all){
+    const box = e.walker ? walkHit(e) : e.hit, cx = box.x + box.w / 2;
+    if (hoverId === e.id && selId !== e.id){
+      g.R(box.x, box.y, box.w, 1, '#ffb454'); g.R(box.x, box.y + box.h - 1, box.w, 1, '#ffb454'); g.R(box.x, box.y, 1, box.h, '#ffb454'); g.R(box.x + box.w - 1, box.y, 1, box.h, '#ffb454');
+      if (e.kind === 'clean') pill(g, e.nama, e.x + 6, e.y - 6, 6, 'rgba(30,32,50,0.92)', '#ffffff');
+    }
+    if (status[e.id]) drawBubble(g, cx, (e.walker ? e.y : e.pos.oy) - 17, t);
+    if (selId === e.id){
+      const top = (e.walker ? e.y - 14 : e.pos.oy - (status[e.id] ? 24 : 9)) + (reduce ? 0 : Math.sin(t * 5) * 1.2);
+      drawArrow(g, cx, top, '#ffb454');
+      if (e.kind === 'clean') pill(g, e.nama, e.x + 6, e.y - 6, 6, 'rgba(30,32,50,0.92)', '#ffffff');
+    }
+  }
+}
+
+/* ============ Ukuran, loop, interaksi ============ */
+const stage = document.getElementById('stage');
+function rebuildStatic(){ drawStatic(gfx(stat.getContext('2d'), S), phase); }
+function resize(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const cssW = Math.max(300, stage.clientWidth), cssH = cssW * H / W;
+  S = cssW * dpr / W;
+  canvas.style.width = cssW + 'px'; canvas.style.height = cssH + 'px';
+  canvas.width = Math.round(W * S); canvas.height = Math.round(H * S);
+  stat.width = canvas.width; stat.height = canvas.height;
+  ctx.imageSmoothingEnabled = false;
+  G = gfx(ctx, S);
+  rebuildStatic();
+}
+let last = 0, acc = 0, lastDraw = 0, onscreen = true;
+function frame(ts){
+  const dt = Math.min(0.1, (ts - last) / 1000); last = ts;
+  if (onscreen){
+    for (const w of walkers) updateWalker(w, dt);
+    updateElev(dt);
+    if (reduce){ acc += dt; if (acc >= 1){ acc = 0; render(ts); } }
+    else if (ts - lastDraw >= 32){ lastDraw = ts; render(ts); }
+  }
+  requestAnimationFrame(frame);
+}
+function toLogical(ev){
+  const r = canvas.getBoundingClientRect();
+  return { x: (ev.clientX - r.left) * W / r.width, y: (ev.clientY - r.top) * H / r.height };
+}
+function hitTest(p){
+  const list = walkers.concat(ents.slice().reverse());
+  const hits = [];
+  for (const e of list){
+    const b = e.walker ? walkHit(e) : e.hit;
+    if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) hits.push(e);
+  }
+  if (!hits.length) return null;
+  hits.sort((a, b) => (b.walker ? b.y + 22 : b.base) - (a.walker ? a.y + 22 : a.base));   // yang tampak paling depan
+  // karakter duduk punya prioritas bila pejalan hanya menyentuh sedikit
+  const seated = hits.find(h => !h.walker);
+  if (seated && hits[0].walker && !(p.y >= hits[0].y + 4)) return seated;
+  return hits[0];
+}
+
+/* ============ Kartu profil ============ */
+const card = document.getElementById('card');
+function drawAvatar(e){
+  const cv = document.getElementById('avatar'), c = cv.getContext('2d');
+  c.clearRect(0, 0, 56, 56);
+  const g = gfx(c, 3.5);
+  if (e.empty){ g.R(3, 5, 10, 10, '#3a3f5c'); g.R(2, 12, 12, 4, '#c99a68'); return; }
+  drawPerson(g, 2, 3, e.look, { bob: false, blink: false });
+}
+function fillCard(e){
+  const set = (id, v) => { document.getElementById(id).textContent = v; };
+  set('cName', e.nama);
+  const facts = document.getElementById('cFacts'); facts.innerHTML = '';
+  const add = (k, v) => { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = k; dd.textContent = v; facts.append(dt, dd); };
+  const traits = document.getElementById('cTraits'); traits.innerHTML = '';
+  const note = document.getElementById('cNote'); note.hidden = true;
+  const roomEl = document.getElementById('cRoom');
+  roomEl.hidden = false; roomEl.textContent = e.loc;
+  if (e.minimal){                                  // Hn: hanya nama dan jabatan
+    roomEl.hidden = true;
+    add('Jabatan', e.tugas);
+  } else if (e.empty){
+    add('Tugas', e.tugas);
+    note.textContent = 'Meja ini belum ditempati.'; note.hidden = false;
+  } else {
+    add('Gender', e.gender);
+    const age = ageOf(e.lahir, wibDate(nowMs()));
+    add('Umur', age == null ? 'Belum diinfo' : age + ' tahun');
+    add('Tugas', e.tugas);
+    if (e.sifat) e.sifat.split(',').map(s => s.trim()).filter(Boolean).forEach(s => { const li = document.createElement('li'); li.textContent = s; traits.appendChild(li); });
+  }
+  traits.hidden = !traits.children.length;
+  drawAvatar(e);
+  refreshState();
+}
+function refreshState(){
+  const el = document.getElementById('cState');
+  el.hidden = !(selId && isPosting(selId, wibSec(nowMs())));
+}
+const hint = document.getElementById('hint');
+function openCard(id){ selId = id; fillCard(byId[id]); card.hidden = false; hint.hidden = true; }
+function closeCard(){ selId = null; card.hidden = true; hint.hidden = false; }
+
+/* ============ Daftar, zoom, jam ============ */
+function buildList(){
+  const box = document.getElementById('groups');
+  const emptyNote = { tamu: 'Ruang tunggu tamu', resepsionis: 'Belum ada agent', kontraktor: 'Meja masih kosong', interior: 'Meja masih kosong' };
+  for (const r of ROOMS){
+    const members = ents.filter(e => e.room === r.id && !e.empty);
+    const wrap = document.createElement('div'), h = document.createElement('h3');
+    h.textContent = r.building + (r.where ? ' · ' + r.where : '') + ' · ' + r.name;
+    wrap.appendChild(h);
+    if (!members.length){ const p = document.createElement('p'); p.className = 'foot'; p.textContent = emptyNote[r.id] || 'Belum ada agent'; wrap.appendChild(p); }
+    else {
+      const ul = document.createElement('ul');
+      members.forEach((m, i) => { const li = document.createElement('li'), b = document.createElement('button'); b.type = 'button'; b.textContent = m.anon && members.length > 1 ? m.nama + ' ' + (i + 1) : m.nama; b.addEventListener('click', () => openCard(m.id)); li.appendChild(b); ul.appendChild(li); });
+      wrap.appendChild(ul);
+    }
+    box.appendChild(wrap);
+  }
+  const n = ents.filter(e => !e.empty).length + 1;   // + Iray (pejalan)
+  document.getElementById('sub').textContent = n + ' karakter di 4 gedung: Alca, 39, 17, dan Ozora. Klik atau ketuk karakter untuk melihat profilnya.';
+}
+let zoom = 1;
+function setZoom(z){ zoom = Math.max(1, Math.min(2.2, z)); stage.style.width = zoom > 1 ? (zoom * 100) + '%' : ''; }
+function tickClock(){
+  const s = wibSec(nowMs()), p = n => String(n).padStart(2, '0');
+  document.getElementById('clock').textContent = p(Math.floor(s / 3600)) + ':' + p(Math.floor(s % 3600 / 60));
+  const ph = skyOf(s);
+  if (ph !== phase && stat && stat.width){ phase = ph; rebuildStatic(); }
+  refreshState();
+}
+
+/* ============ Mulai ============ */
+canvas = document.getElementById('scene');
+ctx = canvas.getContext('2d');
+stat = document.createElement('canvas');
+phase = skyOf(wibSec(nowMs()));
+buildList();
+resize();
+new ResizeObserver(resize).observe(stage);
+if ('IntersectionObserver' in window) new IntersectionObserver(es => { onscreen = es.some(x => x.isIntersecting); }, { rootMargin: '120px' }).observe(canvas);
+canvas.addEventListener('pointermove', ev => { const h = hitTest(toLogical(ev)); hoverId = h ? h.id : null; canvas.style.cursor = h ? 'pointer' : 'default'; });
+canvas.addEventListener('pointerleave', () => { hoverId = null; });
+canvas.addEventListener('click', ev => { const h = hitTest(toLogical(ev)); if (h) openCard(h.id); else closeCard(); });
+document.getElementById('cardClose').addEventListener('click', closeCard);
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') closeCard(); });
+document.getElementById('zIn').addEventListener('click', () => setZoom(zoom + 0.4));
+document.getElementById('zOut').addEventListener('click', () => setZoom(zoom - 0.4));
+if (qs.get('buka') && byId[qs.get('buka')]) openCard(qs.get('buka'));
+tickClock(); setInterval(tickClock, 1000);
+requestAnimationFrame(ts => { last = ts; lastDraw = 0; frame(ts); });
+})();
+</script>
+</body>
+</html>
