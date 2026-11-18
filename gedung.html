@@ -5,111 +5,113 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gedung | Alca</title>
 <meta name="description" content="Gedung Alca dan tiga game house (39, 17, Ozora): denah interaktif tempat tim dan agent Alca bekerja.">
-<meta property="og:title" content="Gedung | Alca">
-<meta property="og:type" content="website">
-<meta property="og:description" content="Denah interaktif gedung Alca, game house 39, 17, dan Ozora.">
 <meta name="theme-color" content="#0a0907">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<meta property="og:title" content="Gedung | Alca">
+<meta property="og:description" content="Denah interaktif gedung Alca, game house 39, 17, dan Ozora.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://hendryalca-lab.github.io/alca/assets/logo.webp">
+<link rel="icon" type="image/webp" href="assets/logo.webp">
+<link rel="stylesheet" href="assets/style.css">
 <style>
-:root{
-  /* Arah: gedung pixel tampak dari depan (potongan lantai), dibingkai gelap supaya aman ditempel di situs mana pun. */
-  --bg:#0a0907; --panel:#272c49; --panel-2:#323859; --ink:#f3efe6; --muted:#aab0cf; --line:#3d4468;
-  --accent:#ffb454; --good:#7ee2a8;
-  --f-body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --f-pixel:"Press Start 2P",ui-monospace,Menlo,Consolas,monospace;
-  color-scheme:dark;
-}
-*{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body)}
-.site{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;max-width:1120px;margin:0 auto;padding:14px 16px;border-bottom:1px solid #26231f}
-.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-weight:700;font-size:18px}
-.brand img{width:28px;height:28px;object-fit:contain}
-.site nav{display:flex;gap:6px;flex-wrap:wrap}
-.site nav a{color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px;font-size:14px}
-.site nav a:hover{color:var(--ink);background:var(--panel)}
-.crumb{margin:0;color:var(--muted);font-size:13px}
-.crumb a{color:var(--muted)}
-.crumb a:hover{color:var(--ink)}
-.sitefoot{max-width:1120px;margin:0 auto;padding:18px 16px 32px;border-top:1px solid #26231f;color:var(--muted);font-size:13px}
-.wrap{max-width:1120px;margin:0 auto;padding:20px 16px 28px;display:grid;gap:14px}
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
-h1{margin:0;font:400 15px/1.4 var(--f-pixel);color:var(--accent);letter-spacing:.02em}
-.sub{margin:8px 0 0;color:var(--muted);font-size:14px;max-width:64ch}
-.clock{display:flex;align-items:center;gap:9px;font:400 11px/1 var(--f-pixel);color:var(--ink);font-variant-numeric:tabular-nums;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
-.clock .dot{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 rgba(126,226,168,.6);animation:pulse 2s infinite}
+.sub{margin:8px 0 0;color:var(--g-muted);font-size:14px;max-width:64ch}
+.clock{display:flex;align-items:center;gap:9px;font:400 11px/1 var(--g-f-pixel);color:var(--g-ink);font-variant-numeric:tabular-nums;background:var(--g-panel);border:1px solid var(--g-line);border-radius:8px;padding:9px 12px}
+.clock .dot{width:8px;height:8px;border-radius:50%;background:var(--g-good);box-shadow:0 0 0 0 rgba(126,226,168,.6);animation:pulse 2s infinite}
 @keyframes pulse{70%{box-shadow:0 0 0 7px rgba(126,226,168,0)}100%{box-shadow:0 0 0 0 rgba(126,226,168,0)}}
-.viewer{position:relative;display:grid;grid-template-columns:minmax(0,1fr);background:#14172a;border:1px solid var(--line);border-radius:12px;overflow:clip}
+.viewer{position:relative;display:grid;grid-template-columns:minmax(0,1fr);background:#0e0c08;border:1px solid var(--g-line);border-radius:12px;overflow:clip}
 .canvasbox{position:relative;min-width:0}
 .scroller{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
 .stage{width:100%;min-width:600px}
 canvas#scene{display:block;touch-action:pan-x pan-y}
 .right{display:flex;align-items:center;gap:10px}
 .tools{display:flex;gap:6px}
-.tools button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:700 18px/1 var(--f-body);cursor:pointer}
-.tools button:hover{background:var(--panel-2)}
-button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tools button{width:34px;height:34px;border-radius:8px;border:1px solid var(--g-line);background:var(--g-panel);color:var(--g-ink);font:700 18px/1 var(--g-f-body);cursor:pointer}
+.tools button:hover{background:var(--g-panel-2)}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--g-accent);outline-offset:2px}
 /* panel profil: lembar bawah di layar sempit, kolom kanan yang ikut menggulir di layar lebar */
 .side{position:sticky;bottom:8px;z-index:3;margin:0 8px 8px;pointer-events:none}
 .sidein>*{pointer-events:auto}
 .hint{display:none}
-.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 12px 34px rgba(0,0,0,.55)}
-.card .close{position:absolute;top:8px;right:8px;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
-.card .close:hover{background:var(--panel-2);color:var(--ink)}
+.gd-card{position:relative;background:var(--g-panel);border:1px solid var(--g-line);border-radius:12px;padding:12px 14px;box-shadow:0 12px 34px rgba(0,0,0,.55)}
+.gd-card .close{position:absolute;top:8px;right:8px;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--g-muted);font-size:20px;line-height:1;cursor:pointer}
+.gd-card .close:hover{background:var(--g-panel-2);color:var(--g-ink)}
 .who{display:flex;gap:12px;align-items:center;padding-right:24px}
-.who canvas{width:56px;height:56px;border-radius:10px;background:var(--panel-2);flex:none}
+.who canvas{width:56px;height:56px;border-radius:10px;background:var(--g-panel-2);flex:none}
 .who h2{margin:0;font-size:18px;line-height:1.2}
-.who p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.who p{margin:2px 0 0;color:var(--g-muted);font-size:13px}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;margin:12px 0 0}
-.facts dt{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;align-self:center}
+.facts dt{color:var(--g-muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;align-self:center}
 .facts dd{margin:0;font-size:15px}
 .traits{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
-.traits li{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:13px}
-.state{display:inline-flex;align-items:center;gap:7px;margin:10px 0 0;font-size:13px;color:var(--good);font-weight:600}
-.state::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--good)}
-.note{margin:10px 0 0;color:var(--muted);font-size:13px}
-.list{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.traits li{background:var(--g-panel-2);border:1px solid var(--g-line);border-radius:999px;padding:3px 11px;font-size:13px}
+.state{display:inline-flex;align-items:center;gap:7px;margin:10px 0 0;font-size:13px;color:var(--g-good);font-weight:600}
+.state::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--g-good)}
+.note{margin:10px 0 0;color:var(--g-muted);font-size:13px}
+.list{background:var(--g-panel);border:1px solid var(--g-line);border-radius:12px;padding:12px 14px}
 .list summary{cursor:pointer;font-weight:600}
 .groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px 18px;margin-top:12px}
-.groups h3{margin:0 0 6px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;line-height:1.35}
+.groups h3{margin:0 0 6px;font-size:12px;color:var(--g-muted);text-transform:uppercase;letter-spacing:.07em;line-height:1.35}
 .groups ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
-.groups button{font:inherit;font-size:14px;color:var(--ink);background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:5px 11px;cursor:pointer}
-.groups button:hover{border-color:var(--accent)}
+.groups button{font:inherit;font-size:14px;color:var(--g-ink);background:var(--g-panel-2);border:1px solid var(--g-line);border-radius:8px;padding:5px 11px;cursor:pointer}
+.groups button:hover{border-color:var(--g-accent)}
 .groups p{margin:0}
-.foot{margin:0;color:var(--muted);font-size:13px}
+.foot{margin:0;color:var(--g-muted);font-size:13px}
 @media (min-width:1040px){
   .viewer{grid-template-columns:minmax(0,1fr) 296px}
-  .side{position:static;margin:0;border-left:1px solid var(--line);background:var(--panel);pointer-events:auto}
-  .sidein{position:sticky;top:12px;padding:16px}
-  .card{background:transparent;border:0;box-shadow:none;padding:0}
-  .hint:not([hidden]){display:block;margin:0;color:var(--muted);font-size:14px}
+  .side{position:static;margin:0;border-left:1px solid var(--g-line);background:var(--g-panel);pointer-events:auto}
+  .sidein{position:sticky;top:84px;padding:16px}
+  .gd-card{background:transparent;border:0;box-shadow:none;padding:0}
+  .hint:not([hidden]){display:block;margin:0;color:var(--g-muted);font-size:14px}
   .tools{display:none}
 }
 .swipe{display:none}
 @media (max-width:719px){ .swipe{display:block} }
 @media (prefers-reduced-motion:reduce){.clock .dot{animation:none}}
+
+.gd{--g-panel:#12100b;--g-panel-2:#1b1812;--g-ink:#e9e4d6;--g-muted:#9a9078;--g-line:#3a321f;--g-accent:#d9bd72;--g-good:#7ee2a8;
+  --g-f-body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--g-f-pixel:ui-monospace,Menlo,Consolas,monospace;
+  display:grid;gap:14px;color:var(--g-ink);font-size:15px;line-height:1.5;color-scheme:dark}
+.gd-wide{max-width:1180px}
+.gd-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.gd .who h2,.gd .groups h3{font-family:var(--g-f-body)}
+.gd .who h2{color:var(--g-ink)}
+.gd .groups h3{font-weight:600}
+.gd-back{margin-top:6px}
 </style>
 </head>
 <body>
-<header class="site">
-  <a class="brand" href="index.html"><img src="assets/logo.webp" alt="" width="28" height="28"><span>Alca</span></a>
-  <nav aria-label="Menu utama">
-    <a href="index.html">Beranda</a>
-    <a href="index.html#tentang">Tentang</a>
-    <a href="index.html#bidang-usaha">Bidang Usaha</a>
-    <a href="index.html#kontak">Kontak</a>
-  </nav>
-</header>
+<header class="site-header">
 <div class="wrap">
-  <p class="crumb"><a href="index.html">Beranda</a> / <a href="index.html#tentang">Tentang</a> / Gedung</p>
-  <header class="top">
-    <div>
-      <h1>Gedung Alca</h1>
-      <p class="sub" id="sub"></p>
-    </div>
+<a class="brand" href="index.html"><img src="assets/logo.webp" alt="" width="34" height="36">Alca</a>
+<nav class="nav" aria-label="Menu utama">
+<a href="index.html">Beranda</a>
+<a href="index.html#tentang" aria-current="page">Tentang</a>
+<a href="index.html#bidang-usaha">Bidang Usaha</a>
+<a href="index.html#kontak">Kontak</a>
+</nav>
+</div>
+</header>
+<main>
+<div class="page-top">
+<div class="wrap crumbs">
+<a href="index.html">Beranda</a><span>/</span><a href="index.html#tentang">Tentang</a><span>/</span>Gedung
+</div>
+<section class="page-hero">
+<div class="wrap">
+<span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 21V5l8-2 8 2v16"/><path d="M2 21h20"/><path d="M9 9h2M13 9h2M9 13h2M13 13h2"/><path d="M10 21v-4h4v4"/></svg></span>
+<span class="eyebrow">Tentang</span>
+<h1>Gedung Alca</h1>
+<p class="lead" id="sub"></p>
+</div>
+</section>
+</div>
+
+<section class="section">
+<div class="wrap gd-wide">
+<div class="gd">
+  <div class="gd-top">
+    <span class="eyebrow">Denah interaktif</span>
     <div class="right">
       <div class="tools">
         <button type="button" id="zOut" aria-label="Perkecil denah">&minus;</button>
@@ -117,7 +119,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outli
       </div>
       <div class="clock"><span class="dot"></span><span><span id="clock">--:--</span> WIB</span></div>
     </div>
-  </header>
+  </div>
 
   <section class="viewer" id="viewer" aria-label="Denah gedung">
     <div class="canvasbox">
@@ -129,7 +131,7 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outli
     </div>
     <aside class="side" id="side"><div class="sidein">
       <p class="hint" id="hint">Klik karakter di denah untuk melihat profilnya: nama, gender, umur, tugas, dan sifat.</p>
-      <div class="card" id="card" hidden aria-live="polite">
+      <div class="gd-card" id="card" hidden aria-live="polite">
         <button type="button" class="close" id="cardClose" aria-label="Tutup">&times;</button>
         <div class="who">
           <canvas id="avatar" width="56" height="56"></canvas>
@@ -149,11 +151,19 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outli
   </details>
 
   <p class="foot swipe">Geser denah ke samping bila terpotong, atau pakai tombol + dan &minus;.</p>
-  <p class="foot">Petugas kebersihan (3 orang per lantai, kecuali lantai direktur) berkeliling pelan di tiap lantai. Jam mengikuti WIB, dan gelembung "posting" muncul sesuai jadwal posting otomatis tiap agent.</p>
+  <p class="foot">Petugas kebersihan (3 orang per lantai, kecuali lantai direktur dan rooftop) berkeliling pelan di tiap lantai dan gedung game house. Jam mengikuti WIB, dan gelembung "posting" muncul sesuai jadwal posting otomatis tiap agent.</p>
   <noscript><p class="foot">Halaman ini butuh JavaScript untuk menampilkan denah gedung.</p></noscript>
+  <div class="actions gd-back"><a class="btn btn-ghost" href="index.html#tentang">&larr; Kembali ke Tentang</a></div>
 </div>
-<footer class="sitefoot">&copy; Alca &middot; sejak 2010</footer>
-
+</div>
+</section>
+</main>
+<footer class="site-footer">
+<div class="wrap">
+<span>&copy; Alca &middot; sejak 2010</span>
+<nav aria-label="Bidang usaha"><a href="business-management.html">Business management</a><a href="civil-contractor.html">Civil contractor</a><a href="interior-works.html">Interior works</a><a href="fnb-business.html">F&amp;B business</a><a href="icafe.html">iCafe</a><a href="game-house.html">Game House</a></nav>
+</div>
+</footer>
 <script>
 (() => {
 'use strict';
@@ -213,13 +223,15 @@ const T = {                                         // tema ruangan: [dinding, l
   tamu:        ['#b5703a', '#f6e6d0', '#efdcc0'],
   resepsionis: ['#7a6aa8', '#e8e4f5', '#ddd8ee'],
   keamanan:    ['#34486e', '#d6dbe8', '#cbd2e2'],
+  fnb:         ['#c0623a', '#fbe9d6', '#f4dcc0'],
+  icafe:       ['#5a3d8a', '#e6def4', '#dbd1ee'],
   house:       ['#4f8a4b', '#dcefd8', '#d1e8cc']
 };
 /* Lantai Alca dari atas ke bawah (sesuai tab Gedung; lantai 4 memang tidak ada). */
 const LEVELS = [
   { id: 'rt', label: 'ATAP', title: 'Rooftop (helipad)', y: 14, roof: true },
   { id: 'l8', label: '8', title: 'Lantai 8', y: 90,  rooms: [{ id: 'direktur', name: 'Ruang direktur', share: 1, maxPitch: 80 }] },
-  { id: 'l7', label: '7', title: 'Lantai 7', y: 166, rooms: [{ id: 'manajemen', name: 'Manajemen bisnis', share: 1, maxPitch: 76 }] },
+  { id: 'l7', label: '7', title: 'Lantai 7', y: 166, rooms: [{ id: 'manajemen', name: 'Manajemen bisnis', share: .5, maxPitch: 76 }, { id: 'fnb', name: 'Ruang FnB', share: .25 }, { id: 'icafe', name: 'Ruang iCafe', share: .25 }] },
   { id: 'l6', label: '6', title: 'Lantai 6', y: 242, rooms: [{ id: 'dev', name: 'Developer game', share: .453, maxPitch: 48 }, { id: 'sw', name: 'Software house', share: .547, maxPitch: 48 }] },
   { id: 'l5', label: '5', title: 'Lantai 5', y: 318, rooms: [{ id: 'sosmed', name: 'Agensi sosial media', share: 1, maxPitch: 60 }] },
   { id: 'l3', label: '3', title: 'Lantai 3', y: 394, rooms: [{ id: 'gh', name: 'Game house', share: 1, ax: .28 }] },
@@ -246,6 +258,7 @@ for (const L of LEVELS){
 for (const h of HOUSES){
   ROOMS.push({ id: h.id, name: 'Game house', house: h, building: h.title, where: '', x: h.x + 4, y: HY + 4, w: HW - 8, h: HH - 8, oy: HY + 110, maxPitch: 70, theme: T.house });
 }
+ROOMS.unshift({ id: 'atap', name: 'Helipad', building: 'Gedung Alca', where: 'Rooftop', virtual: true, x: 296, y: LEVELS[0].y + 52, w: 60, h: 24, oy: LEVELS[0].y + 44, theme: T.house });
 const ROOM = Object.fromEntries(ROOMS.map(r => [r.id, r]));
 
 /* ============ Data karakter (tab Kantor di sheet Project) ============ */
@@ -253,11 +266,16 @@ const ROOM = Object.fromEntries(ROOMS.map(r => [r.id, r]));
 const P = 'Perempuan', Lk = 'Lelaki';
 const SEC_SKIN = ['#f2c9a0', '#e8b88a', '#e0a97a', '#c68a5a'];
 const DATA = [
+  // Rooftop: kru penerbangan (duduk standby di bangku dekat helipad)
+  { id:'safe', nama:'Safe', room:'atap', bench:true, cx:312, gender:Lk, lahir:'1988-08-14', tugas:'Pilot helikopter', sifat:'Tenang, Teliti, Disiplin',
+    look:{ skin:'#e0a97a', hair:'#1e1e28', shirt:'#4b5f7a', style:'short', acc:'glasses headset' } },
+  { id:'strong', nama:'Strong', room:'atap', bench:true, cx:338, gender:P, lahir:'1993-01-27', tugas:'Pilot helikopter', sifat:'Tangguh, Fokus, Berani',
+    look:{ skin:'#e8b88a', hair:'#2a1d1a', shirt:'#5f6b4a', style:'ponytail', acc:'headset' } },
   // Lantai 8
-  { id:'hn', nama:'Hn', room:'direktur', gender:Lk, lahir:null, tugas:'Direktur', sifat:'', minimal:true,
-    look:{ skin:'#e0a97a', hair:'#1e1e28', shirt:'#2b2f45', style:'short', acc:'suit' }, item:'papers', mon:'hn', dw:56 },
-  { id:'reina', nama:'Reina', room:'direktur', gender:P, lahir:'2000-05-18', tugas:'Sekretaris', sifat:'Sigap, Rapi, Setia',
-    look:{ skin:'#f2c9a0', hair:'#3a2a4a', shirt:'#6f8fe0', style:'bob' }, item:'papers' },
+  { id:'hn', nama:'Hn', room:'direktur', gender:Lk, lahir:null, tugas:'Direktur', sifat:'', minimal:true, exec:true,
+    look:{ skin:'#e0a97a', hair:'#1e1e28', shirt:'#2b2f45', style:'short', acc:'suit' }, item:'papers', mon:'hn', dw:84 },
+  { id:'reina', nama:'Reina', room:'direktur', cx:386, gender:P, lahir:'2000-05-18', tugas:'Sekretaris', sifat:'Sigap, Rapi, Setia',
+    look:{ skin:'#f2c9a0', hair:'#3a2a4a', shirt:'#6f8fe0', style:'bob' }, item:'papers', mon:'single', dw:40 },
   // Lantai 7
   { id:'yllina', nama:'Yllina', room:'manajemen', gender:P, lahir:'2002-03-03', tugas:'Ahli manajemen bisnis', sifat:'Gesit, Rapi, Ceria',
     look:{ skin:'#f2c9a0', hair:'#1e1e28', shirt:'#f08a5d', style:'bob' }, item:'papers' },
@@ -265,6 +283,10 @@ const DATA = [
     look:{ skin:'#c68a5a', hair:'#2a1d1a', shirt:'#4a7a9a', style:'ponytail' }, item:'mug' },
   { id:'kaina', nama:'Kaina', room:'manajemen', gender:P, lahir:'1999-08-09', tugas:'Ahli manajemen bisnis', sifat:'Cermat, Komunikatif, Tenang',
     look:{ skin:'#e8b88a', hair:'#4a2f1e', shirt:'#5b8def', style:'long' }, item:'plant' },
+  { id:'r', nama:'R', room:'fnb', gender:P, lahir:'1991-03-20', tugas:'Ahli F&B', sifat:'Rajin, Jago masak, Tegas',
+    look:{ skin:'#f2c9a0', hair:'#2a1d1a', shirt:'#d9503f', style:'ponytail', acc:'chef apron' }, item:'mug' },
+  { id:'aw', nama:'AW', room:'icafe', gender:Lk, lahir:'2002-11-06', tugas:'Ahli iCafe', sifat:'Rajin, Inisiatif, Jujur',
+    look:{ skin:'#e0a97a', hair:'#1e1e28', shirt:'#2f8fc0', style:'short', acc:'headset' }, item:'mug', mon:'single' },
   // Lantai 6
   { id:'lyxi', nama:'Lyxi', room:'dev', gender:Lk, lahir:'2000-02-11', tugas:'Produser game', sifat:'Berani, Fokus, Tangguh',
     look:{ skin:'#e0a97a', hair:'#3a2a20', shirt:'#c0463c', style:'short' }, item:'mug' },
@@ -311,16 +333,16 @@ const DATA = [
   { id:'int1', empty:true, nama:'Meja kosong', room:'interior', tugas:'Tim desain interior', item:'swatch' },
   { id:'int2', empty:true, nama:'Meja kosong', room:'interior', tugas:'Tim desain interior', item:'lamp' },
   { id:'int3', empty:true, nama:'Meja kosong', room:'interior', tugas:'Tim desain interior', item:'plant' },
-  // Lantai 1: sekuriti dan resepsionis tanpa nama (staf), umur dan sifat tetap ada
-  { id:'sek1', anon:true, nama:'Petugas keamanan', room:'keamanan', gender:Lk, lahir:'1986-11-10', tugas:'Menjaga keamanan gedung', sifat:'Tegas, Setia, Tenang',
+  // Lantai 1: sekuriti (bernama) dan resepsionis (tanpa nama)
+  { id:'sek1', nama:'Tub Rog', room:'keamanan', gender:Lk, lahir:'1986-11-10', tugas:'Petugas keamanan', sifat:'Tegas, Setia, Tenang',
     look:{ skin:'#c68a5a', hair:'#1e1e28', shirt:'#1f3560', style:'short', acc:'cap badge' }, item:'mug', mon:'single' },
-  { id:'sek2', anon:true, nama:'Petugas keamanan', room:'keamanan', gender:P, lahir:'1994-04-12', tugas:'Menjaga keamanan gedung', sifat:'Waspada, Sopan, Sabar',
+  { id:'sek2', nama:'Katona', room:'keamanan', gender:P, lahir:'1994-04-12', tugas:'Petugas keamanan', sifat:'Waspada, Sopan, Sabar',
     look:{ skin:'#e8b88a', hair:'#2a1d1a', shirt:'#2f4a7a', style:'ponytail', acc:'cap badge' }, item:'papers', mon:'single' },
-  { id:'sek3', anon:true, nama:'Petugas keamanan', room:'keamanan', gender:Lk, lahir:'1993-07-30', tugas:'Menjaga keamanan gedung', sifat:'Disiplin, Jujur, Ramah',
+  { id:'sek3', nama:'Solda', room:'keamanan', gender:Lk, lahir:'1993-07-30', tugas:'Petugas keamanan', sifat:'Disiplin, Jujur, Ramah',
     look:{ skin:'#e0a97a', hair:'#2a2a3a', shirt:'#2f4a7a', style:'short', acc:'cap badge' }, item:'mug', mon:'single' },
-  { id:'sek4', anon:true, nama:'Petugas keamanan', room:'keamanan', gender:Lk, lahir:'1990-02-05', tugas:'Menjaga keamanan gedung', sifat:'Tangguh, Teliti, Bertanggung jawab',
+  { id:'sek4', nama:'Voljak', room:'keamanan', gender:Lk, lahir:'1990-02-05', tugas:'Petugas keamanan', sifat:'Tangguh, Teliti, Bertanggung jawab',
     look:{ skin:'#f2c9a0', hair:'#3a2a20', shirt:'#2f4a7a', style:'short', acc:'cap badge' }, item:'papers', mon:'single' },
-  { id:'sek5', anon:true, nama:'Petugas keamanan', room:'keamanan', gender:P, lahir:'1997-08-16', tugas:'Menjaga keamanan gedung', sifat:'Sigap, Ramah, Tulus',
+  { id:'sek5', nama:'Gunin', room:'keamanan', gender:P, lahir:'1997-08-16', tugas:'Petugas keamanan', sifat:'Sigap, Ramah, Tulus',
     look:{ skin:'#c68a5a', hair:'#1e1e28', shirt:'#2f4a7a', style:'ponytail', acc:'cap badge' }, item:'plant', mon:'single' },
   { id:'resp', anon:true, nama:'Resepsionis', room:'resepsionis', gender:P, lahir:'1998-04-09', tugas:'Menyambut tamu di meja resepsionis', sifat:'Ramah, Santun, Cekatan',
     look:{ skin:'#f2c9a0', hair:'#2a1d1a', shirt:'#7a6aa8', style:'ponytail', acc:'headset' }, item:'bell', mon:'single', dw:52 },
@@ -329,9 +351,9 @@ const DATA = [
     look:{ skin:'#e0a97a', hair:'#1e1e28', shirt:'#2f7d4f', style:'short', acc:'headset' }, item:'coins', mon:'dual', dw:46 },
   { id:'k', nama:'K', room:'h39', gender:Lk, lahir:'1997-03-12', tugas:'Deputy head admin', sifat:'Inisiatif, Ramah, Rajin',
     look:{ skin:'#f2c9a0', hair:'#3a2a20', shirt:'#8a6a3a', style:'short' }, item:'papers' },
-  { id:'o', nama:'O', room:'h17', gender:Lk, lahir:null, tugas:'Admin', sifat:'Rajin, Sopan, Tulus', umurPending:true,
+  { id:'o', nama:'O', room:'h17', gender:Lk, lahir:null, tugas:'Admin', sifat:'Rajin, Jujur, Disiplin', umurPending:true,
     look:{ skin:'#c68a5a', hair:'#1e1e28', shirt:'#4a6aa0', style:'short' }, item:'mug' },
-  { id:'n', nama:'N', room:'hoz', gender:Lk, lahir:'1996-07-02', tugas:'Admin', sifat:'Ramah, Gigih, Humoris',
+  { id:'n', nama:'N', room:'hoz', gender:Lk, lahir:'1996-07-02', tugas:'Admin', sifat:'Tegas, Jujur, Disiplin',
     look:{ skin:'#e0a97a', hair:'#2a2a3a', shirt:'#a0556a', style:'short' }, item:'plant' }
 ];
 
@@ -403,12 +425,37 @@ const DECO = {
   direktur(g, r){
     const cx = r.x + r.w / 2, ry = r.y + 24;
     g.R(cx - 88, ry, 176, 42, '#9c3d3a'); g.R(cx - 86, ry + 2, 172, 38, '#b5524e'); g.R(cx - 82, ry + 6, 164, 30, '#9c3d3a'); g.R(cx - 80, ry + 8, 160, 26, '#b5524e');
-    shelf(g, r.x + 4, r.y, 34); shelf(g, r.x + r.w - 38, r.y, 34); windows(g, r, 4);
+    shelf(g, r.x + 4, r.y, 34); windows(g, r, 4);
+    // pintu masuk di sisi kanan (dekat lift), meja sekretaris di sebelahnya
+    const dx = r.x + r.w - 24, dy = r.y + 4;
+    g.R(dx - 2, dy - 2, 18, 51, '#4a3320'); g.R(dx, dy, 14, 47, '#8a5a34'); g.R(dx, dy, 1, 47, '#a37042');
+    g.R(dx + 2, dy + 3, 10, 18, '#9c6a40'); g.R(dx + 2, dy + 25, 10, 19, '#9c6a40'); g.R(dx + 2, dy + 23, 2, 3, '#f2c230');
     plant(g, r.x + 4, r.y + r.h - 14); plant(g, r.x + r.w - 12, r.y + r.h - 14);
   },
   manajemen(g, r){
-    whiteboard(g, r.x + 24, r.y + 2, 46); whiteboard(g, r.x + r.w - 70, r.y + 2, 46); windows(g, r, 2);
+    whiteboard(g, r.x + 14, r.y + 2, 40); whiteboard(g, r.x + r.w - 54, r.y + 2, 40); windows(g, r, 2);
     plant(g, r.x + 4, r.y + r.h - 14); plant(g, r.x + r.w - 12, r.y + r.h - 14);
+  },
+  fnb(g, r){
+    // kulkas di kiri, kompor dan panci di kanan, peralatan masak tergantung di dinding
+    const fx = r.x + 3, fy = r.y + 20;
+    g.R(fx, fy, 14, 28, '#c9d3dc'); g.R(fx, fy, 14, 1, '#e8eef3'); g.R(fx + 1, fy + 1, 12, 12, '#dfe6ec'); g.R(fx + 1, fy + 15, 12, 12, '#dfe6ec');
+    g.R(fx, fy + 14, 14, 1, '#8f9aa6'); g.R(fx + 10, fy + 4, 1, 5, '#8f9aa6'); g.R(fx + 10, fy + 17, 1, 5, '#8f9aa6'); g.R(fx, fy + 27, 14, 1, '#8f9aa6');
+    const sx = r.x + r.w - 30, sy = r.y + 26;
+    g.R(sx, sy + 8, 27, 14, '#7a5632'); g.R(sx, sy + 7, 27, 2, '#b8bcc8'); g.R(sx, sy + 7, 27, 1, '#dfe3ec');
+    g.R(sx + 3, sy + 6, 8, 1, '#2a2a3a'); g.R(sx + 15, sy + 6, 8, 1, '#2a2a3a');
+    g.R(sx + 3, sy, 8, 6, '#9aa0b0'); g.R(sx + 3, sy, 8, 1, '#c8cedc'); g.R(sx + 2, sy + 1, 1, 2, '#9aa0b0'); g.R(sx + 11, sy + 1, 1, 2, '#9aa0b0');
+    g.R(sx + 17, sy + 3, 4, 3, '#c0463c'); g.R(sx + 16, sy + 5, 6, 1, '#8a2f28');
+    g.R(sx + 8, sy + 12, 11, 7, '#2a2a3a'); g.R(sx + 9, sy + 13, 9, 1, '#555a70');
+    disc(g, r.x + r.w - 10, r.y + 8, 4, '#3a3f4a'); g.R(r.x + r.w - 7, r.y + 7, 5, 2, '#3a3f4a');
+    g.R(r.x + 14, r.y + 4, 1, 8, '#c8cedc'); g.R(r.x + 12, r.y + 3, 5, 3, '#c8cedc');
+    plant(g, r.x + r.w - 44, r.y + r.h - 14);
+  },
+  icafe(g, r){
+    // dua bilik komputer di kiri dan kanan meja pengelola
+    pcFrame(g, r.x + 17, r.y + 34); pcFrame(g, r.x + r.w - 17, r.y + 34);
+    g.R(r.x + 8, r.y + 4, 1, 9, '#e0a8ff'); g.R(r.x + 8, r.y + 4, 8, 1, '#e0a8ff'); g.R(r.x + r.w - 17, r.y + 12, 9, 1, '#7ee2f0'); g.R(r.x + r.w - 9, r.y + 4, 1, 9, '#7ee2f0');
+    plant(g, r.x + 3, r.y + r.h - 14); plant(g, r.x + r.w - 11, r.y + r.h - 14);
   },
   dev(g, r){ windows(g, r, 1); plant(g, r.x + 2, r.y + r.h - 14); plant(g, r.x + r.w - 10, r.y + r.h - 14); },
   sw(g, r){ windows(g, r, 1); plant(g, r.x + 2, r.y + r.h - 14); plant(g, r.x + r.w - 10, r.y + r.h - 14); },
@@ -535,12 +582,12 @@ function drawStatic(g, phase){
   g.R(IX0 - 4, 90, IX1 - IX0 + 8, 622 - 90, '#1f2340');
   drawRoofTop(g, LEVELS[0]);
   for (const r of ROOMS){
-    if (r.house) continue;
+    if (r.house || r.virtual) continue;
     drawRoom(g, r); plaque(g, r, r.name);
     DECO[r.id] && DECO[r.id](g, r);
   }
   // sekat kaca antar ruangan (lorong depan tetap terbuka)
-  for (const r of ROOMS){ if (r.house) continue; if (r.x > IX0) g.R(r.x - 2, r.y, 2, 50, '#1f2340'); }
+  for (const r of ROOMS){ if (r.house || r.virtual) continue; if (r.x > IX0) g.R(r.x - 2, r.y, 2, 50, '#1f2340'); }
   // pelat nomor lantai
   for (const L of LEVELS){
     g.R(2, L.y + 6, 20, 14, '#1f2340'); g.R(3, L.y + 7, 18, 12, '#2a3060'); g.R(3, L.y + 7, 18, 1, '#4350a0');
@@ -631,7 +678,7 @@ function randomProfile(id){
 const ents = [], walkers = [];
 {
   const byRoom = {};
-  for (const d of DATA) if (!d.wander) (byRoom[d.room] = byRoom[d.room] || []).push(d);
+  for (const d of DATA) if (!d.wander && !d.bench) (byRoom[d.room] = byRoom[d.room] || []).push(d);
   for (const d of DATA){
     const e = Object.assign({}, d);
     e.look = Object.assign({}, d.look || {});
@@ -640,10 +687,15 @@ const ents = [], walkers = [];
     e.bobPer = 0.9 + (hash(d.id) % 6) / 10;
     const r = ROOM[d.room];
     e.loc = r.building + (r.where ? ' · ' + r.where : '') + ' · ' + r.name;
-    if (!d.wander){
+    if (d.bench){
+      e.pos = { cx: d.cx, oy: r.oy }; e.dw = 24; e.lblY = 30;
+      e.hit = { x: d.cx - 13, y: r.oy - 5, w: 26, h: 30 };
+      e.base = r.oy + 22;
+      ents.push(e);
+    } else if (!d.wander){
       const list = byRoom[d.room], i = list.indexOf(d), n = list.length;
       const pitch = Math.min(r.w / n, r.maxPitch || 72);
-      const cx = Math.round(r.x + r.w * (r.ax == null ? .5 : r.ax) + (i - (n - 1) / 2) * pitch);
+      const cx = d.cx != null ? d.cx : Math.round(r.x + r.w * (r.ax == null ? .5 : r.ax) + (i - (n - 1) / 2) * pitch);
       e.dw = d.dw || Math.min(40, Math.floor(pitch - 6));
       e.pos = { cx, oy: r.oy };
       const hw = Math.min(Math.floor(pitch / 2) - 1, 26);
@@ -657,17 +709,30 @@ const ents = [], walkers = [];
       walkers.push(e);
     }
   }
-  // 3 petugas kebersihan di tiap lantai (kecuali lantai direktur) dan tiap game house
-  const TOOLS = [['broom', 'Menyapu lantai'], ['mop', 'Mengepel lantai'], ['cloth', 'Mengelap kaca dan dinding']];
+  // 3 petugas kebersihan di tiap lantai (kecuali rooftop dan lantai direktur) dan tiap game house.
+  // Nama: kata "bersih / kebersihan" dari berbagai bahasa. [nama, bahasa, arti, perempuan?]
+  const TOOLS = [['broom', 'menyapu lantai'], ['mop', 'mengepel lantai'], ['cloth', 'mengelap kaca dan dinding']];
+  const CLEAN = [
+    ['Pulita', 'Italia', 'bersih', 1], ['Katharos', 'Yunani', 'bersih, murni', 0], ['Czysta', 'Polandia', 'bersih', 1],
+    ['Schoon', 'Belanda', 'bersih', 0], ['Limpia', 'Spanyol', 'bersih', 1], ['Temiz', 'Turki', 'bersih', 0],
+    ['Tiszta', 'Hungaria', 'bersih', 1], ['Nazif', 'Arab', 'bersih', 0], ['Chistaya', 'Rusia', 'bersih', 1],
+    ['Sauber', 'Jerman', 'bersih', 0], ['Gl\u00e2n', 'Wales', 'bersih', 1], ['Curat', 'Rumania', 'bersih', 0],
+    ['Pakizeh', 'Persia', 'bersih, suci', 1], ['Hreinn', 'Islandia', 'bersih, murni', 0], ['Naki', 'Ibrani', 'bersih', 1],
+    ['Kiyoshi', 'Jepang', 'bersih, murni', 0], ['Jie', 'Mandarin', 'bersih, suci', 1], ['Swachh', 'Hindi', 'bersih', 0],
+    ['Nirmala', 'Sanskerta', 'bersih, tak bernoda', 1], ['Cheong', 'Korea', 'bersih, jernih', 0], ['Sach', 'Vietnam', 'bersih', 1],
+    ['Sa-at', 'Thai', 'bersih', 0], ['Linis', 'Tagalog', 'bersih, kebersihan', 1], ['Resik', 'Jawa', 'bersih', 0],
+    ['Safi', 'Swahili', 'bersih, murni', 1], ['Tsabta', 'Hausa', 'kebersihan', 1], ['Maemae', 'Hawaii', 'bersih, murni', 1]
+  ];
   const areas = [];
-  for (const L of LEVELS) if (L.id !== 'l8') areas.push({ key: L.id, loc: 'Gedung Alca · ' + L.title, bx: [IX0 + 6, IX1 - 18], by: [L.y + 39, L.y + 49] });
+  for (const L of LEVELS) if (L.id !== 'l8' && !L.roof) areas.push({ key: L.id, loc: 'Gedung Alca \u00b7 ' + L.title, bx: [IX0 + 6, IX1 - 18], by: [L.y + 39, L.y + 49] });
   for (const h of HOUSES) areas.push({ key: h.id, loc: h.title, bx: [h.x + 8, h.x + HW - 26], by: [HY + 80, HY + 94] });
+  let ci = 0;
   for (const a of areas) for (let k = 0; k < 3; k++){
-    const id = 'cl-' + a.key + '-' + k, pr = randomProfile(id), hv = hash(id);
+    const id = 'cl-' + a.key + '-' + k, pr = randomProfile(id), hv = hash(id), nm = CLEAN[ci++], fem = !!nm[3];
     walkers.push({
-      id, walker: true, anon: true, kind: 'clean', tool: TOOLS[k][0], nama: 'Petugas kebersihan', tugas: TOOLS[k][1], loc: a.loc, room: null,
-      gender: pr.f ? P : Lk, lahir: pr.lahir, sifat: pr.sifat,
-      look: { skin: SEC_SKIN[hv % 4], hair: ['#1e1e28', '#2a1d1a', '#3a2a20', '#4a2f1e'][(hv >> 3) % 4], shirt: '#2fa7a0', style: pr.f ? 'ponytail' : 'short', acc: 'cap apron', cap: '#e9f3f2', f: pr.f },
+      id, walker: true, kind: 'clean', tool: TOOLS[k][0], nama: nm[0], arti: nm[2] + ' (bahasa ' + nm[1] + ')', tugas: 'Petugas kebersihan, ' + TOOLS[k][1], loc: a.loc, room: null,
+      gender: fem ? P : Lk, lahir: pr.lahir, sifat: pr.sifat,
+      look: { skin: SEC_SKIN[hv % 4], hair: ['#1e1e28', '#2a1d1a', '#3a2a20', '#4a2f1e'][(hv >> 3) % 4], shirt: '#2fa7a0', style: fem ? 'ponytail' : 'short', acc: 'cap apron', cap: '#e9f3f2', f: fem },
       bx: a.bx, by: a.by, slot: k, phase: (hv % 628) / 100
     });
   }
@@ -727,13 +792,34 @@ function updateElev(dt){
 /* ============ Render dinamis ============ */
 function drawDesk(g, e){
   const { cx, oy } = e.pos, w = e.dw, dx = cx - w / 2;
+  if (e.exec){
+    g.R(dx + 2, oy + 28, w - 4, 2, 'rgba(0,0,0,0.12)');
+    g.R(dx + 1, oy + 24, 5, 4, '#4a2f18'); g.R(dx + w - 6, oy + 24, 5, 4, '#4a2f18');
+    g.R(dx, oy + 19, w, 5, '#6b4423'); g.R(dx, oy + 23, w, 1, '#4a2f18'); g.R(dx, oy + 18, w, 1, '#d6a84a');
+    g.R(dx + w - 22, oy + 20, 18, 3, '#4a2f18'); g.R(dx + w - 14, oy + 21, 2, 1, '#d6a84a');
+    g.R(dx, oy + 12, w, 6, '#8a5a32'); g.R(dx, oy + 12, w, 1, '#b07a48');
+    return;
+  }
   g.R(dx + 2, oy + 28, w - 4, 2, 'rgba(0,0,0,0.10)');
   g.R(dx + 1, oy + 24, 3, 4, '#6e4c2b'); g.R(dx + w - 4, oy + 24, 3, 4, '#6e4c2b');
   g.R(dx, oy + 19, w, 5, '#9a6f42'); g.R(dx, oy + 23, w, 1, '#7a5632');
   g.R(dx, oy + 13, w, 6, '#c99a68'); g.R(dx, oy + 13, w, 1, '#e2b985');
 }
-function drawEntity(g, e, t, posting){
+function drawBench(g, e, t){
   const { cx, oy } = e.pos, ox = cx - 6;
+  const bob = reduce ? 0 : (Math.floor(t / e.bobPer + e.phase * 10) % 2);
+  const blink = !reduce && ((t + e.phase * 7) % 4.3) < 0.13;
+  g.R(cx - 13, oy + 7, 26, 10, '#7a5632'); g.R(cx - 13, oy + 7, 26, 1, '#a07848');
+  drawPerson(g, ox, oy, e.look, { bob, blink });
+  g.R(cx - 13, oy + 15, 26, 3, '#9a6f42'); g.R(cx - 13, oy + 15, 26, 1, '#c99a68'); g.R(cx - 13, oy + 17, 26, 1, '#7a5632');
+  g.R(ox + 3, oy + 18, 3, 4, '#3b4260'); g.R(ox + 6, oy + 18, 3, 4, '#3b4260'); g.R(ox + 3, oy + 22, 3, 1, '#1e1c26'); g.R(ox + 6, oy + 22, 3, 1, '#1e1c26');
+  g.R(cx - 13, oy + 18, 2, 5, '#6e4c2b'); g.R(cx + 11, oy + 18, 2, 5, '#6e4c2b');
+  g.R(cx - 12, oy + 24, 24, 1, 'rgba(0,0,0,0.18)');
+}
+function drawEntity(g, e, t, posting){
+  if (e.bench){ drawBench(g, e, t); return; }
+  const { cx, oy } = e.pos, ox = cx - 6;
+  if (e.exec){ g.R(ox - 3, oy + 3, 18, 15, '#2a2e48'); g.R(ox - 3, oy + 3, 18, 1, '#4a5078'); }
   g.R(ox - 1, oy + 7, 14, 11, '#3a3f5c'); g.R(ox - 1, oy + 7, 14, 1, '#555c85'); g.R(ox - 1, oy + 17, 14, 1, '#2c3048');
   if (!e.empty){
     const per = posting ? 0.22 : e.bobPer;
@@ -744,7 +830,7 @@ function drawEntity(g, e, t, posting){
   drawDesk(g, e);
   if (e.mon === 'dual'){ monitor(g, cx - 20, oy + 5, t, 1); monitor(g, cx + 10, oy + 5, t, 3); }
   else if (e.mon === 'single'){ monitor(g, cx + 7, oy + 5, t, hash(e.id) % 5); }
-  else if (e.mon === 'hn'){ monitor(g, cx - 24, oy + 4, t, 2); g.R(cx - 8, oy + 20, 16, 3, '#d6a84a'); g.R(cx - 8, oy + 20, 16, 1, '#f0c96a'); }
+  else if (e.mon === 'hn'){ monitor(g, cx - 34, oy + 4, t, 2); monitor(g, cx + 24, oy + 4, t, 4); g.R(cx - 8, oy + 20, 16, 3, '#d6a84a'); g.R(cx - 8, oy + 20, 16, 1, '#f0c96a'); }
   if (!e.empty && e.mon !== 'dual'){
     g.R(cx - 5, oy + 11, 10, 5, '#8d93a8'); g.R(cx - 5, oy + 11, 10, 1, '#aab0c4'); g.R(cx - 1, oy + 13, 2, 1, '#f4f4f8'); g.R(cx - 6, oy + 16, 12, 1, '#6c728a');
   }
@@ -817,7 +903,12 @@ function render(ts){
     g.R(p.cx - 3, p.ry + 2, 3, 1, PCCOL[(p.sd + f) % 5]); g.R(p.cx + 1, p.ry + 3, 3, 1, PCCOL[(p.sd + f + 2) % 5]); g.R(p.cx - 3, p.ry + 4, 5, 1, PCCOL[(p.sd + f + 4) % 5]);
   }
   // lift, helikopter, lampu antena
-  const eg = G; eg.R(461, elev.y, 12, 22, '#e8c46a'); eg.R(462, elev.y + 1, 10, 20, '#fff0b8'); eg.R(466, elev.y + 3, 1, 19, '#c9a24a'); eg.R(462, elev.y, 10, 1, '#fff');
+  const eg = G, stopped = Math.abs(elev.ty - elev.y) < .6;
+  eg.R(461, elev.y, 12, 22, '#e8c46a'); eg.R(462, elev.y + 1, 10, 20, '#fff0b8'); eg.R(466, elev.y + 10, 1, 12, '#c9a24a'); eg.R(462, elev.y, 10, 1, '#fff');
+  eg.R(462, elev.y + 1, 10, 8, '#232840');
+  if (stopped){ const k = STOPS.indexOf(elev.ty); if (k >= 0) eg.T(LEVELS[k].roof ? 'RF' : LEVELS[k].label + 'F', 467, elev.y + 7.6, 5.4, '#7ee2a8', 'center'); }
+  else if (elev.ty < elev.y){ eg.R(467, elev.y + 3, 1, 1, '#ffd166'); eg.R(466, elev.y + 4, 3, 1, '#ffd166'); eg.R(465, elev.y + 5, 5, 1, '#ffd166'); }
+  else { eg.R(465, elev.y + 3, 5, 1, '#ffd166'); eg.R(466, elev.y + 4, 3, 1, '#ffd166'); eg.R(467, elev.y + 5, 1, 1, '#ffd166'); }
   drawHeli(g, t, LEVELS[0].y);
   g.R(150, LEVELS[0].y + 20, 2, 2, (reduce || Math.floor(t * 1.2) % 2) ? '#ff5a5a' : '#7a2a2a');
   // urut berdasarkan garis dasar: yang lebih bawah digambar lebih akhir
@@ -838,7 +929,7 @@ function render(ts){
     if (e.empty) continue;
     const sel = selId === e.id, hov = hoverId === e.id;
     if (e.anon && !sel && !hov) continue;
-    pill(g, e.nama, e.pos.cx, e.pos.oy + 35, 6.5, sel ? '#ffb454' : hov ? '#ffe2b0' : 'rgba(255,248,230,0.92)', '#2a2a3a');
+    pill(g, e.nama, e.pos.cx, e.pos.oy + (e.lblY || 35), 6.5, sel ? '#ffb454' : hov ? '#ffe2b0' : 'rgba(255,248,230,0.92)', '#2a2a3a');
   }
   const iray = byId.iray;
   pill(g, iray.nama, iray.x + 6, iray.y - 3, 6, 'rgba(30,32,50,0.9)', '#ffffff');
@@ -930,6 +1021,7 @@ function fillCard(e){
     const age = ageOf(e.lahir, wibDate(nowMs()));
     add('Umur', age == null ? 'Belum diinfo' : age + ' tahun');
     add('Tugas', e.tugas);
+    if (e.arti) add('Arti nama', e.arti);
     if (e.sifat) e.sifat.split(',').map(s => s.trim()).filter(Boolean).forEach(s => { const li = document.createElement('li'); li.textContent = s; traits.appendChild(li); });
   }
   traits.hidden = !traits.children.length;
@@ -961,7 +1053,7 @@ function buildList(){
     }
     box.appendChild(wrap);
   }
-  const n = ents.filter(e => !e.empty).length + 1;   // + Iray (pejalan)
+  const n = ents.filter(e => !e.empty).length + walkers.length;   // + Iray dan petugas kebersihan (pejalan)
   document.getElementById('sub').textContent = n + ' karakter di 4 gedung: Alca, 39, 17, dan Ozora. Klik atau ketuk karakter untuk melihat profilnya.';
 }
 let zoom = 1;
