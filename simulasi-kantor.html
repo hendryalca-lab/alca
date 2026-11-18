@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gedung | Alca</title>
-<meta name="description" content="Gedung Alca dan tiga game house (39, 17, Ozora): denah interaktif tempat tim dan agent Alca bekerja.">
+<title>Simulasi Kantor | Alca</title>
+<meta name="description" content="Simulasi kantor Alca: denah interaktif gedung Alca dan tiga game house (39, 17, Ozora), tempat tim dan agent Alca bekerja.">
 <meta name="theme-color" content="#0a0907">
-<meta property="og:title" content="Gedung | Alca">
-<meta property="og:description" content="Denah interaktif gedung Alca, game house 39, 17, dan Ozora.">
+<meta property="og:title" content="Simulasi Kantor | Alca">
+<meta property="og:description" content="Simulasi kantor Alca: denah interaktif gedung Alca, game house 39, 17, dan Ozora.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://hendryalca-lab.github.io/alca/assets/logo.webp">
 <link rel="icon" type="image/webp" href="assets/logo.webp">
@@ -95,13 +95,13 @@ button:focus-visible,summary:focus-visible{outline:2px solid var(--g-accent);out
 <main>
 <div class="page-top">
 <div class="wrap crumbs">
-<a href="index.html">Beranda</a><span>/</span><a href="index.html#tentang">Tentang</a><span>/</span>Gedung
+<a href="index.html">Beranda</a><span>/</span><a href="index.html#tentang">Tentang</a><span>/</span>Simulasi kantor
 </div>
 <section class="page-hero">
 <div class="wrap">
 <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 21V5l8-2 8 2v16"/><path d="M2 21h20"/><path d="M9 9h2M13 9h2M9 13h2M13 13h2"/><path d="M10 21v-4h4v4"/></svg></span>
 <span class="eyebrow">Tentang</span>
-<h1>Gedung Alca</h1>
+<h1>Simulasi Kantor</h1>
 <p class="lead" id="sub"></p>
 </div>
 </section>
@@ -224,13 +224,14 @@ const T = {                                         // tema ruangan: [dinding, l
   resepsionis: ['#7a6aa8', '#e8e4f5', '#ddd8ee'],
   keamanan:    ['#34486e', '#d6dbe8', '#cbd2e2'],
   fnb:         ['#c0623a', '#fbe9d6', '#f4dcc0'],
+  sekretaris:  ['#4a6a8a', '#e3ecf5', '#d8e4f0'],
   icafe:       ['#5a3d8a', '#e6def4', '#dbd1ee'],
   house:       ['#4f8a4b', '#dcefd8', '#d1e8cc']
 };
 /* Lantai Alca dari atas ke bawah (sesuai tab Gedung; lantai 4 memang tidak ada). */
 const LEVELS = [
   { id: 'rt', label: 'ATAP', title: 'Rooftop (helipad)', y: 14, roof: true },
-  { id: 'l8', label: '8', title: 'Lantai 8', y: 90,  rooms: [{ id: 'direktur', name: 'Ruang direktur', share: 1, maxPitch: 80 }] },
+  { id: 'l8', label: '8', title: 'Lantai 8', y: 90,  rooms: [{ id: 'direktur', name: 'Ruang direktur', share: .7, maxPitch: 80 }, { id: 'sekretaris', name: 'Ruang Reina', share: .3, maxPitch: 80 }] },
   { id: 'l7', label: '7', title: 'Lantai 7', y: 166, rooms: [{ id: 'manajemen', name: 'Manajemen bisnis', share: .5, maxPitch: 76 }, { id: 'fnb', name: 'Ruang FnB', share: .25 }, { id: 'icafe', name: 'Ruang iCafe', share: .25 }] },
   { id: 'l6', label: '6', title: 'Lantai 6', y: 242, rooms: [{ id: 'dev', name: 'Developer game', share: .453, maxPitch: 48 }, { id: 'sw', name: 'Software house', share: .547, maxPitch: 48 }] },
   { id: 'l5', label: '5', title: 'Lantai 5', y: 318, rooms: [{ id: 'sosmed', name: 'Agensi sosial media', share: 1, maxPitch: 60 }] },
@@ -273,8 +274,8 @@ const DATA = [
     look:{ skin:'#e8b88a', hair:'#2a1d1a', shirt:'#5f6b4a', style:'ponytail', acc:'headset' } },
   // Lantai 8
   { id:'hn', nama:'Hn', room:'direktur', gender:Lk, lahir:null, tugas:'Direktur', sifat:'', minimal:true, exec:true,
-    look:{ skin:'#e0a97a', hair:'#1e1e28', shirt:'#2b2f45', style:'short', acc:'suit' }, item:'papers', mon:'hn', dw:84 },
-  { id:'reina', nama:'Reina', room:'direktur', cx:386, gender:P, lahir:'2000-05-18', tugas:'Sekretaris', sifat:'Sigap, Rapi, Setia',
+    look:{ skin:'#e0a97a', hair:'#1e1e28', shirt:'#2b2f45', style:'short', acc:'suit' }, item:'papers', mon:'hn', dw:96 },
+  { id:'reina', nama:'Reina', room:'sekretaris', gender:P, lahir:'2000-05-18', tugas:'Sekretaris', sifat:'Sigap, Rapi, Setia',
     look:{ skin:'#f2c9a0', hair:'#3a2a4a', shirt:'#6f8fe0', style:'bob' }, item:'papers', mon:'single', dw:40 },
   // Lantai 7
   { id:'yllina', nama:'Yllina', room:'manajemen', gender:P, lahir:'2002-03-03', tugas:'Ahli manajemen bisnis', sifat:'Gesit, Rapi, Ceria',
@@ -333,7 +334,7 @@ const DATA = [
   { id:'int1', empty:true, nama:'Meja kosong', room:'interior', tugas:'Tim desain interior', item:'swatch' },
   { id:'int2', empty:true, nama:'Meja kosong', room:'interior', tugas:'Tim desain interior', item:'lamp' },
   { id:'int3', empty:true, nama:'Meja kosong', room:'interior', tugas:'Tim desain interior', item:'plant' },
-  // Lantai 1: sekuriti (bernama) dan resepsionis (tanpa nama)
+  // Lantai 1: sekuriti dan resepsionis (semua bernama)
   { id:'sek1', nama:'Tub Rog', room:'keamanan', gender:Lk, lahir:'1986-11-10', tugas:'Petugas keamanan', sifat:'Tegas, Setia, Tenang',
     look:{ skin:'#c68a5a', hair:'#1e1e28', shirt:'#1f3560', style:'short', acc:'cap badge' }, item:'mug', mon:'single' },
   { id:'sek2', nama:'Katona', room:'keamanan', gender:P, lahir:'1994-04-12', tugas:'Petugas keamanan', sifat:'Waspada, Sopan, Sabar',
@@ -344,7 +345,7 @@ const DATA = [
     look:{ skin:'#f2c9a0', hair:'#3a2a20', shirt:'#2f4a7a', style:'short', acc:'cap badge' }, item:'papers', mon:'single' },
   { id:'sek5', nama:'Gunin', room:'keamanan', gender:P, lahir:'1997-08-16', tugas:'Petugas keamanan', sifat:'Sigap, Ramah, Tulus',
     look:{ skin:'#c68a5a', hair:'#1e1e28', shirt:'#2f4a7a', style:'ponytail', acc:'cap badge' }, item:'plant', mon:'single' },
-  { id:'resp', anon:true, nama:'Resepsionis', room:'resepsionis', gender:P, lahir:'1998-04-09', tugas:'Menyambut tamu di meja resepsionis', sifat:'Ramah, Santun, Cekatan',
+  { id:'resp', nama:'Amukela', room:'resepsionis', gender:P, lahir:'1998-04-09', tugas:'Resepsionis', sifat:'Ramah, Santun, Cekatan',
     look:{ skin:'#f2c9a0', hair:'#2a1d1a', shirt:'#7a6aa8', style:'ponytail', acc:'headset' }, item:'bell', mon:'single', dw:52 },
   // Game house 39, 17, Ozora
   { id:'sh', nama:'SH', room:'h39', gender:Lk, lahir:'1996-09-12', tugas:'Head admin', sifat:'Tekun, Jujur, Bertanggung jawab',
@@ -385,9 +386,10 @@ function plant(g, x, y){
   g.R(x + 1, y + 8, 6, 4, '#b5651d'); g.R(x + 1, y + 8, 6, 1, '#d98a3d');
   g.R(x + 2, y + 3, 4, 5, '#3fa34d'); g.R(x, y + 4, 3, 3, '#4cc060'); g.R(x + 5, y + 4, 3, 3, '#4cc060'); g.R(x + 3, y + 1, 2, 3, '#5fd068');
 }
-function sofa(g, x, y, w){
-  g.R(x, y, w, 7, '#8a5fa8'); g.R(x, y + 6, w, 9, '#a176c0');
-  g.R(x, y + 3, 4, 12, '#7a4f98'); g.R(x + w - 4, y + 3, 4, 12, '#7a4f98');
+function sofa(g, x, y, w, c){
+  const k = c || ['#8a5fa8', '#a176c0', '#7a4f98'];
+  g.R(x, y, w, 7, k[0]); g.R(x, y + 6, w, 9, k[1]);
+  g.R(x, y + 3, 4, 12, k[2]); g.R(x + w - 4, y + 3, 4, 12, k[2]);
   g.R(x + 2, y + 15, 3, 2, '#4a3a2a'); g.R(x + w - 5, y + 15, 3, 2, '#4a3a2a');
 }
 function arcade(g, x, y){
@@ -421,16 +423,26 @@ function whiteboard(g, x, y, w){
 function cone(g, x, y){ g.R(x + 2, y, 3, 2, '#e8702a'); g.R(x + 1, y + 2, 5, 3, '#e8702a'); g.R(x + 2, y + 2, 3, 1, '#f4f4f4'); g.R(x, y + 5, 7, 1, '#c85a1c'); }
 function blueprint(g, x, y){ g.R(x, y, 26, 12, '#7a5632'); g.R(x + 1, y + 1, 24, 10, '#9bc4f0'); g.R(x + 3, y + 3, 14, 1, '#fff'); g.R(x + 3, y + 5, 9, 1, '#fff'); g.R(x + 3, y + 8, 18, 1, '#fff'); g.R(x + 19, y + 3, 4, 4, '#fff'); }
 
+function door(g, x, y){
+  g.R(x - 2, y - 2, 18, 51, '#4a3320'); g.R(x, y, 14, 47, '#8a5a34'); g.R(x, y, 1, 47, '#a37042');
+  g.R(x + 2, y + 3, 10, 18, '#9c6a40'); g.R(x + 2, y + 25, 10, 19, '#9c6a40'); g.R(x + 2, y + 23, 2, 3, '#f2c230');
+}
+
 const DECO = {
   direktur(g, r){
     const cx = r.x + r.w / 2, ry = r.y + 24;
-    g.R(cx - 88, ry, 176, 42, '#9c3d3a'); g.R(cx - 86, ry + 2, 172, 38, '#b5524e'); g.R(cx - 82, ry + 6, 164, 30, '#9c3d3a'); g.R(cx - 80, ry + 8, 160, 26, '#b5524e');
-    shelf(g, r.x + 4, r.y, 34); windows(g, r, 4);
-    // pintu masuk di sisi kanan (dekat lift), meja sekretaris di sebelahnya
-    const dx = r.x + r.w - 24, dy = r.y + 4;
-    g.R(dx - 2, dy - 2, 18, 51, '#4a3320'); g.R(dx, dy, 14, 47, '#8a5a34'); g.R(dx, dy, 1, 47, '#a37042');
-    g.R(dx + 2, dy + 3, 10, 18, '#9c6a40'); g.R(dx + 2, dy + 25, 10, 19, '#9c6a40'); g.R(dx + 2, dy + 23, 2, 3, '#f2c230');
+    // karpet di tengah, meja direktur besar di atasnya
+    g.R(cx - 62, ry, 124, 42, '#9c3d3a'); g.R(cx - 60, ry + 2, 120, 38, '#b5524e'); g.R(cx - 56, ry + 6, 112, 30, '#9c3d3a'); g.R(cx - 54, ry + 8, 108, 26, '#b5524e');
+    shelf(g, r.x + 4, r.y, 34); shelf(g, r.x + r.w - 38, r.y, 34); windows(g, r, 4);
+    // sofa kulit dan meja tamu di sisi kiri
+    sofa(g, r.x + 8, r.y + 24, 44, ['#6b3f2a', '#8a5238', '#5a3322']);
+    g.R(r.x + 56, r.y + 40, 24, 8, '#7a5632'); g.R(r.x + 56, r.y + 40, 24, 1, '#a07848'); g.R(r.x + 62, r.y + 38, 4, 2, '#f4f4f4'); g.R(r.x + 70, r.y + 38, 4, 2, '#e9c27a');
     plant(g, r.x + 4, r.y + r.h - 14); plant(g, r.x + r.w - 12, r.y + r.h - 14);
+  },
+  sekretaris(g, r){
+    // dua pintu: kiri menuju ruang direktur, kanan menuju lift
+    door(g, r.x + 6, r.y + 4); door(g, r.x + r.w - 22, r.y + 4);
+    plant(g, r.x + 3, r.y + r.h - 14); plant(g, r.x + r.w - 11, r.y + r.h - 14);
   },
   manajemen(g, r){
     whiteboard(g, r.x + 14, r.y + 2, 40); whiteboard(g, r.x + r.w - 54, r.y + 2, 40); windows(g, r, 2);
@@ -666,14 +678,6 @@ function deskItem(g, kind, cx, oy, dw){
   }
 }
 
-/* Profil acak yang tetap (berdasarkan id): umur awal paling tinggi 40, lalu naik sendiri sesuai tanggal lahir. */
-const GOOD = ['Rajin', 'Teliti', 'Ramah', 'Sabar', 'Jujur', 'Tekun', 'Sopan', 'Cekatan', 'Telaten', 'Disiplin', 'Hangat', 'Tulus', 'Rapi', 'Gigih', 'Santun', 'Ceria', 'Tenang', 'Sigap', 'Cermat', 'Setia'];
-function randomProfile(id){
-  const r = k => hash(id + '#' + k), p2 = n => String(n).padStart(2, '0');
-  const idx = []; for (let k = 0; idx.length < 3; k++){ const i = r('t' + k) % GOOD.length; if (idx.indexOf(i) < 0) idx.push(i); }
-  return { f: r('g') % 100 < 40, lahir: (1986 + r('y') % 19) + '-' + p2(1 + r('m') % 12) + '-' + p2(1 + r('d') % 28), sifat: idx.map(i => GOOD[i]).join(', ') };
-}
-
 /* ============ Entitas duduk & pejalan ============ */
 const ents = [], walkers = [];
 {
@@ -710,28 +714,28 @@ const ents = [], walkers = [];
     }
   }
   // 3 petugas kebersihan di tiap lantai (kecuali rooftop dan lantai direktur) dan tiap game house.
-  // Nama: kata "bersih / kebersihan" dari berbagai bahasa. [nama, bahasa, arti, perempuan?]
+  // Nama: kata "bersih / kebersihan" dari berbagai bahasa; arti nama ada di tab Kantor. [nama, bahasa, arti, perempuan?, lahir, sifat]
   const TOOLS = [['broom', 'menyapu lantai'], ['mop', 'mengepel lantai'], ['cloth', 'mengelap kaca dan dinding']];
   const CLEAN = [
-    ['Pulita', 'Italia', 'bersih', 1], ['Katharos', 'Yunani', 'bersih, murni', 0], ['Czysta', 'Polandia', 'bersih', 1],
-    ['Schoon', 'Belanda', 'bersih', 0], ['Limpia', 'Spanyol', 'bersih', 1], ['Temiz', 'Turki', 'bersih', 0],
-    ['Tiszta', 'Hungaria', 'bersih', 1], ['Nazif', 'Arab', 'bersih', 0], ['Chistaya', 'Rusia', 'bersih', 1],
-    ['Sauber', 'Jerman', 'bersih', 0], ['Gl\u00e2n', 'Wales', 'bersih', 1], ['Curat', 'Rumania', 'bersih', 0],
-    ['Pakizeh', 'Persia', 'bersih, suci', 1], ['Hreinn', 'Islandia', 'bersih, murni', 0], ['Naki', 'Ibrani', 'bersih', 1],
-    ['Kiyoshi', 'Jepang', 'bersih, murni', 0], ['Jie', 'Mandarin', 'bersih, suci', 1], ['Swachh', 'Hindi', 'bersih', 0],
-    ['Nirmala', 'Sanskerta', 'bersih, tak bernoda', 1], ['Cheong', 'Korea', 'bersih, jernih', 0], ['Sach', 'Vietnam', 'bersih', 1],
-    ['Sa-at', 'Thai', 'bersih', 0], ['Linis', 'Tagalog', 'bersih, kebersihan', 1], ['Resik', 'Jawa', 'bersih', 0],
-    ['Safi', 'Swahili', 'bersih, murni', 1], ['Tsabta', 'Hausa', 'kebersihan', 1], ['Maemae', 'Hawaii', 'bersih, murni', 1]
+    ['Pulita', 'Italia', 'bersih', 1, '1998-08-13', 'Rajin, Teliti, Ramah'], ['Katharos', 'Yunani', 'bersih, murni', 0, '1987-07-04', 'Tulus, Rapi, Gigih'], ['Czysta', 'Polandia', 'bersih', 1, '1995-06-23', 'Ramah, Sabar, Jujur'],
+    ['Schoon', 'Belanda', 'bersih', 0, '1986-09-10', 'Disiplin, Hangat, Tulus'], ['Limpia', 'Spanyol', 'bersih', 1, '1994-08-01', 'Rajin, Teliti, Ramah'], ['Temiz', 'Turki', 'bersih', 0, '2002-07-20', 'Tulus, Rapi, Gigih'],
+    ['Tiszta', 'Hungaria', 'bersih', 1, '1993-10-07', 'Cermat, Setia, Rajin'], ['Nazif', 'Arab', 'bersih', 0, '2001-09-26', 'Disiplin, Hangat, Tulus'], ['Chistaya', 'Rusia', 'bersih', 1, '1990-08-17', 'Rajin, Teliti, Ramah'],
+    ['Sauber', 'Jerman', 'bersih', 0, '1988-12-01', 'Tenang, Sigap, Cermat'], ['Gl\u00e2n', 'Wales', 'bersih', 1, '1996-11-20', 'Cekatan, Telaten, Disiplin'], ['Curat', 'Rumania', 'bersih', 0, '2004-10-11', 'Cermat, Setia, Rajin'],
+    ['Pakizeh', 'Persia', 'bersih, suci', 1, '1995-01-26', 'Tekun, Sopan, Cekatan'], ['Hreinn', 'Islandia', 'bersih, murni', 0, '2003-12-17', 'Tenang, Sigap, Cermat'], ['Naki', 'Ibrani', 'bersih', 1, '1992-11-08', 'Cekatan, Telaten, Disiplin'],
+    ['Kiyoshi', 'Jepang', 'bersih, murni', 0, '2002-02-23', 'Santun, Ceria, Tenang'], ['Jie', 'Mandarin', 'bersih, suci', 1, '1991-01-14', 'Tekun, Sopan, Cekatan'], ['Swachh', 'Hindi', 'bersih', 0, '1999-12-05', 'Tenang, Sigap, Cermat'],
+    ['Nirmala', 'Sanskerta', 'bersih, tak bernoda', 1, '1991-03-06', 'Setia, Rajin, Teliti'], ['Cheong', 'Korea', 'bersih, jernih', 0, '2002-04-15', 'Hangat, Tulus, Rapi'], ['Sach', 'Vietnam', 'bersih', 1, '1994-05-24', 'Teliti, Ramah, Sabar'],
+    ['Sa-at', 'Thai', 'bersih', 0, '1999-11-02', 'Tekun, Jujur, Sabar'], ['Linis', 'Tagalog', 'bersih, kebersihan', 1, '1991-12-11', 'Santun, Gigih, Rapi'], ['Resik', 'Jawa', 'bersih', 0, '2002-01-20', 'Sabar, Ramah, Teliti'],
+    ['Safi', 'Swahili', 'bersih, murni', 1, '2002-10-07', 'Santun, Gigih, Rapi'], ['Tsabta', 'Hausa', 'kebersihan', 1, '1991-09-26', 'Sabar, Ramah, Teliti'], ['Maemae', 'Hawaii', 'bersih, murni', 1, '1999-08-17', 'Rapi, Tulus, Hangat']
   ];
   const areas = [];
   for (const L of LEVELS) if (L.id !== 'l8' && !L.roof) areas.push({ key: L.id, loc: 'Gedung Alca \u00b7 ' + L.title, bx: [IX0 + 6, IX1 - 18], by: [L.y + 39, L.y + 49] });
   for (const h of HOUSES) areas.push({ key: h.id, loc: h.title, bx: [h.x + 8, h.x + HW - 26], by: [HY + 80, HY + 94] });
   let ci = 0;
   for (const a of areas) for (let k = 0; k < 3; k++){
-    const id = 'cl-' + a.key + '-' + k, pr = randomProfile(id), hv = hash(id), nm = CLEAN[ci++], fem = !!nm[3];
+    const id = 'cl-' + a.key + '-' + k, hv = hash(id), nm = CLEAN[ci++], fem = !!nm[3];
     walkers.push({
-      id, walker: true, kind: 'clean', tool: TOOLS[k][0], nama: nm[0], arti: nm[2] + ' (bahasa ' + nm[1] + ')', tugas: 'Petugas kebersihan, ' + TOOLS[k][1], loc: a.loc, room: null,
-      gender: fem ? P : Lk, lahir: pr.lahir, sifat: pr.sifat,
+      id, walker: true, kind: 'clean', tool: TOOLS[k][0], nama: nm[0], tugas: 'Petugas kebersihan, ' + TOOLS[k][1], loc: a.loc, room: null,
+      gender: fem ? P : Lk, lahir: nm[4], sifat: nm[5],
       look: { skin: SEC_SKIN[hv % 4], hair: ['#1e1e28', '#2a1d1a', '#3a2a20', '#4a2f1e'][(hv >> 3) % 4], shirt: '#2fa7a0', style: fem ? 'ponytail' : 'short', acc: 'cap apron', cap: '#e9f3f2', f: fem },
       bx: a.bx, by: a.by, slot: k, phase: (hv % 628) / 100
     });
@@ -830,7 +834,7 @@ function drawEntity(g, e, t, posting){
   drawDesk(g, e);
   if (e.mon === 'dual'){ monitor(g, cx - 20, oy + 5, t, 1); monitor(g, cx + 10, oy + 5, t, 3); }
   else if (e.mon === 'single'){ monitor(g, cx + 7, oy + 5, t, hash(e.id) % 5); }
-  else if (e.mon === 'hn'){ monitor(g, cx - 34, oy + 4, t, 2); monitor(g, cx + 24, oy + 4, t, 4); g.R(cx - 8, oy + 20, 16, 3, '#d6a84a'); g.R(cx - 8, oy + 20, 16, 1, '#f0c96a'); }
+  else if (e.mon === 'hn'){ monitor(g, cx - 40, oy + 4, t, 2); monitor(g, cx + 30, oy + 4, t, 4); g.R(cx - 8, oy + 20, 16, 3, '#d6a84a'); g.R(cx - 8, oy + 20, 16, 1, '#f0c96a'); }
   if (!e.empty && e.mon !== 'dual'){
     g.R(cx - 5, oy + 11, 10, 5, '#8d93a8'); g.R(cx - 5, oy + 11, 10, 1, '#aab0c4'); g.R(cx - 1, oy + 13, 2, 1, '#f4f4f8'); g.R(cx - 6, oy + 16, 12, 1, '#6c728a');
   }
@@ -1021,7 +1025,6 @@ function fillCard(e){
     const age = ageOf(e.lahir, wibDate(nowMs()));
     add('Umur', age == null ? 'Belum diinfo' : age + ' tahun');
     add('Tugas', e.tugas);
-    if (e.arti) add('Arti nama', e.arti);
     if (e.sifat) e.sifat.split(',').map(s => s.trim()).filter(Boolean).forEach(s => { const li = document.createElement('li'); li.textContent = s; traits.appendChild(li); });
   }
   traits.hidden = !traits.children.length;
